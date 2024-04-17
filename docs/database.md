@@ -168,8 +168,7 @@ npm run seed:run:relational
         // Need for saving "this" context
         return () => {
           return this.repositoryUser.create({
-            firstName: faker.person.firstName(),
-            lastName: faker.person.lastName(),
+            userName: faker.person.userName(),
             email: faker.internet.email(),
             password: faker.internet.password(),
             role: this.repositoryRole.create({

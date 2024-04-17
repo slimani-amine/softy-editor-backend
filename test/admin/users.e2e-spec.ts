@@ -29,8 +29,7 @@ describe('Users Module', () => {
         .send({
           email: newUserEmail,
           password: newUserPassword,
-          firstName: `First${Date.now()}`,
-          lastName: 'E2E',
+          userName: `First${Date.now()}`,
         });
 
       await request(app)
@@ -96,8 +95,7 @@ describe('Users Module', () => {
           .send({
             email: newUserByAdminEmail,
             password: newUserByAdminPassword,
-            firstName: `UserByAdmin${Date.now()}`,
-            lastName: 'E2E',
+            userName: `UserByAdmin${Date.now()}`,
             role: {
               id: RoleEnum.user,
             },

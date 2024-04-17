@@ -1,6 +1,6 @@
 import { User } from '../../users/domain/user';
 
-export type LoginResponseType = Readonly<{
+export type AuthResponseType = Readonly<{
   token: string;
   refreshToken: string;
   tokenExpires: number;

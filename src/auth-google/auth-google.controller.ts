@@ -10,7 +10,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from '../auth/auth.service';
 import { AuthGoogleService } from './auth-google.service';
 import { AuthGoogleLoginDto } from './dto/auth-google-login.dto';
-import { LoginResponseType } from '../auth/types/login-response.type';
+import { AuthResponseType } from '../auth/types/login-response.type';
 
 @ApiTags('Auth')
 @Controller({
@@ -30,7 +30,7 @@ export class AuthGoogleController {
   @HttpCode(HttpStatus.OK)
   async login(
     @Body() loginDto: AuthGoogleLoginDto,
-  ): Promise<LoginResponseType> {
+  ): Promise<AuthResponseType> {
     const socialData = await this.authGoogleService.getProfileByToken(loginDto);
 
     return this.authService.validateSocialLogin('google', socialData);

@@ -10,12 +10,7 @@ export class AuthUpdateDto {
   @ApiPropertyOptional({ example: 'John' })
   @IsOptional()
   @IsNotEmpty({ message: 'mustBeNotEmpty' })
-  firstName?: string;
-
-  @ApiPropertyOptional({ example: 'Doe' })
-  @IsOptional()
-  @IsNotEmpty({ message: 'mustBeNotEmpty' })
-  lastName?: string;
+  userName?: string;
 
   @ApiPropertyOptional()
   @IsOptional()

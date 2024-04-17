@@ -20,7 +20,7 @@ import { AuthResetPasswordDto } from './dto/auth-reset-password.dto';
 import { AuthUpdateDto } from './dto/auth-update.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
-import { LoginResponseType } from './types/login-response.type';
+import { AuthResponseType } from './types/login-response.type';
 import { NullableType } from '../utils/types/nullable.type';
 import { User } from '../users/domain/user';
 
@@ -39,13 +39,13 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   public login(
     @Body() loginDto: AuthEmailLoginDto,
-  ): Promise<LoginResponseType> {
+  ): Promise<AuthResponseType> {
     return this.service.validateLogin(loginDto);
   }
 
   @Post('email/register')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async register(@Body() createUserDto: AuthRegisterLoginDto): Promise<void> {
+  @HttpCode(HttpStatus.OK)
+  async register(@Body() createUserDto: AuthRegisterLoginDto): Promise<AuthResponseType> {
     return this.service.register(createUserDto);
   }
 
@@ -92,7 +92,7 @@ export class AuthController {
   @Post('refresh')
   @UseGuards(AuthGuard('jwt-refresh'))
   @HttpCode(HttpStatus.OK)
-  public refresh(@Request() request): Promise<Omit<LoginResponseType, 'user'>> {
+  public refresh(@Request() request): Promise<Omit<AuthResponseType, 'user'>> {
     return this.service.refreshToken({
       sessionId: request.user.sessionId,
       hash: request.user.hash,

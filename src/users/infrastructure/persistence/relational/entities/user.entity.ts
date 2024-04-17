@@ -57,12 +57,8 @@ export class UserEntity extends EntityRelationalHelper implements User {
   socialId?: string | null;
 
   @Index()
-  @Column({ type: String, nullable: true })
-  firstName: string | null;
-
-  @Index()
-  @Column({ type: String, nullable: true })
-  lastName: string | null;
+  @Column({ type: String, unique: true, nullable: true })
+  userName: string | null;
 
   @ManyToOne(() => FileEntity, {
     eager: true,

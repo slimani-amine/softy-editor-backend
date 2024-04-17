@@ -51,12 +51,7 @@ export class UserSchemaClass extends EntityDocumentHelper {
   @Prop({
     type: String,
   })
-  firstName: string | null;
-
-  @Prop({
-    type: String,
-  })
-  lastName: string | null;
+  userName: string | null;
 
   @Prop({
     type: FileSchemaClass,

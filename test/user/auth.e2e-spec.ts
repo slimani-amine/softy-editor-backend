@@ -10,8 +10,7 @@ import {
 describe('Auth Module', () => {
   const app = APP_URL;
   const mail = `http://${MAIL_HOST}:${MAIL_PORT}`;
-  const newUserFirstName = `Tester${Date.now()}`;
-  const newUserLastName = `E2E`;
+  const newUseruserName = `Tester${Date.now()}`;
   const newUserEmail = `User.${Date.now()}@example.com`;
   const newUserPassword = `secret`;
 
@@ -22,8 +21,7 @@ describe('Auth Module', () => {
         .send({
           email: TESTER_EMAIL,
           password: TESTER_PASSWORD,
-          firstName: 'Tester',
-          lastName: 'E2E',
+          userName: 'Tester',
         })
         .expect(422)
         .expect(({ body }) => {
@@ -37,8 +35,7 @@ describe('Auth Module', () => {
         .send({
           email: newUserEmail,
           password: newUserPassword,
-          firstName: newUserFirstName,
-          lastName: newUserLastName,
+          userName: newUseruserName,
         })
         .expect(204);
     });
@@ -203,7 +200,7 @@ describe('Auth Module', () => {
           type: 'bearer',
         })
         .send({
-          firstName: newUserNewName,
+          userName: newUserNewName,
           password: newUserNewPassword,
         })
         .expect(422);
@@ -214,7 +211,7 @@ describe('Auth Module', () => {
           type: 'bearer',
         })
         .send({
-          firstName: newUserNewName,
+          userName: newUserNewName,
           password: newUserNewPassword,
           oldPassword: newUserPassword,
         })

@@ -14,8 +14,7 @@ export class UserMapper {
     user.previousPassword = raw.previousPassword;
     user.provider = raw.provider;
     user.socialId = raw.socialId;
-    user.firstName = raw.firstName;
-    user.lastName = raw.lastName;
+    user.userName = raw.userName;
     if (raw.photo) {
       user.photo = FileMapper.toDomain(raw.photo);
     }
@@ -61,8 +60,7 @@ export class UserMapper {
     userEntity.previousPassword = user.previousPassword;
     userEntity.provider = user.provider;
     userEntity.socialId = user.socialId;
-    userEntity.firstName = user.firstName;
-    userEntity.lastName = user.lastName;
+    userEntity.userName = user.userName;
     userEntity.photo = photo;
     userEntity.role = role;
     userEntity.status = status;

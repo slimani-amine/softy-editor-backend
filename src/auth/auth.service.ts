@@ -16,7 +16,7 @@ import { AuthProvidersEnum } from './auth-providers.enum';
 import { SocialInterface } from '../social/interfaces/social.interface';
 import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
 import { NullableType } from '../utils/types/nullable.type';
-import { LoginResponseType } from './types/login-response.type';
+import { AuthResponseType } from './types/login-response.type';
 import { ConfigService } from '@nestjs/config';
 import { JwtRefreshPayloadType } from './strategies/types/jwt-refresh-payload.type';
 import { JwtPayloadType } from './strategies/types/jwt-payload.type';
@@ -39,7 +39,7 @@ export class AuthService {
     private configService: ConfigService<AllConfigType>,
   ) {}
 
-  async validateLogin(loginDto: AuthEmailLoginDto): Promise<LoginResponseType> {
+  async validateLogin(loginDto: AuthEmailLoginDto): Promise<AuthResponseType> {
     const user = await this.usersService.findOne({
       email: loginDto.email,
     });
@@ -113,7 +113,7 @@ export class AuthService {
   async validateSocialLogin(
     authProvider: string,
     socialData: SocialInterface,
-  ): Promise<LoginResponseType> {
+  ): Promise<AuthResponseType> {
     let user: NullableType<User> = null;
     const socialEmail = socialData.email?.toLowerCase();
     let userByEmail: NullableType<User> = null;
@@ -148,8 +148,7 @@ export class AuthService {
 
       user = await this.usersService.create({
         email: socialEmail ?? null,
-        firstName: socialData.firstName ?? null,
-        lastName: socialData.lastName ?? null,
+        userName: socialData.userName ?? null,
         socialId: socialData.id,
         provider: authProvider,
         role,
@@ -199,7 +198,7 @@ export class AuthService {
     };
   }
 
-  async register(dto: AuthRegisterLoginDto): Promise<void> {
+  async register(dto: AuthRegisterLoginDto): Promise<AuthResponseType> {
     const user = await this.usersService.create({
       ...dto,
       email: dto.email,
@@ -207,30 +206,57 @@ export class AuthService {
         id: RoleEnum.user,
       },
       status: {
-        id: StatusEnum.inactive,
+        id: StatusEnum.active,
       },
     });
+    console.log("🚀 ~ AuthService ~ register ~ user:", user)
 
-    const hash = await this.jwtService.signAsync(
-      {
-        confirmEmailUserId: user.id,
-      },
-      {
-        secret: this.configService.getOrThrow('auth.confirmEmailSecret', {
-          infer: true,
-        }),
-        expiresIn: this.configService.getOrThrow('auth.confirmEmailExpires', {
-          infer: true,
-        }),
-      },
-    );
+    // const hash = await this.jwtService.signAsync(
+    //   {
+    //     confirmEmailUserId: user.id,
+    //   },
+    //   {
+    //     secret: this.configService.getOrThrow('auth.confirmEmailSecret', {
+    //       infer: true,
+    //     }),
+    //     expiresIn: this.configService.getOrThrow('auth.confirmEmailExpires', {
+    //       infer: true,
+    //     }),
+    //   },
+    // );
+    const hash = crypto
+      .createHash('sha256')
+      .update(randomStringGenerator())
+      .digest('hex');
 
-    await this.mailService.userSignUp({
-      to: dto.email,
-      data: {
-        hash,
-      },
+    const session = await this.sessionService.create({
+      user,
+      hash,
     });
+    console.log("🚀 ~ AuthService ~ register ~ session:", session)
+
+    const { token, refreshToken, tokenExpires } = await this.getTokensData({
+      id: user.id,
+      role: user.role,
+      sessionId: session.id,
+      hash,
+    });
+    console.log("🚀 ~ AuthService ~ register ~ tokenExpires:", tokenExpires)
+    console.log("🚀 ~ AuthService ~ register ~ refreshToken:", refreshToken)
+
+    return {
+      refreshToken,
+      token,
+      tokenExpires,
+      user,
+    };
+
+    // await this.mailService.userSignUp({
+    //   to: dto.email,
+    //   data: {
+    //     hash,
+    //   },
+    // });
   }
 
   async confirmEmail(hash: string): Promise<void> {
@@ -433,7 +459,7 @@ export class AuthService {
 
   async refreshToken(
     data: Pick<JwtRefreshPayloadType, 'sessionId' | 'hash'>,
-  ): Promise<Omit<LoginResponseType, 'user'>> {
+  ): Promise<Omit<AuthResponseType, 'user'>> {
     const session = await this.sessionService.findOne({
       id: data.sessionId,
     });
