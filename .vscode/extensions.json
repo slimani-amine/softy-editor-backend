@@ -1,6 +1,7 @@
 {
-  "recommendations": [
-    "yzhang.markdown-all-in-one",
-    "DavidAnson.vscode-markdownlint"
-  ]
+    "recommendations": [
+        "myml.vscode-markdown-plantuml-preview",
+        "esbenp.prettier-vscode",
+        "jebbs.plantuml"
+    ]
 }
