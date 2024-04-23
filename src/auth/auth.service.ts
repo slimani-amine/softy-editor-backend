@@ -28,6 +28,9 @@ import { Session } from '../session/domain/session';
 import { SessionService } from '../session/session.service';
 import { StatusEnum } from '../statuses/statuses.enum';
 import { User } from '../users/domain/user';
+import { AuthLoginDto } from './dto/auth-login.dto';
+import { LoginResponseType } from './types/login-mailing-response.type';
+import { generateUniqueCode } from 'src/utils/generateUniqueCode';
 
 @Injectable()
 export class AuthService {
@@ -198,6 +201,61 @@ export class AuthService {
     };
   }
 
+  async login(loginDto: AuthLoginDto): Promise<LoginResponseType> {
+    const user = await this.usersService.findOne({
+      email: loginDto.email,
+    });
+
+    const hash = crypto
+      .createHash('sha256')
+      .update(randomStringGenerator())
+      .digest('hex');
+
+    const token = await this.jwtService.signAsync(
+      {
+        email: loginDto.email,
+        new: user ? false : true,
+        hash: hash,
+      },
+      {
+        secret: this.configService.getOrThrow('auth.confirmEmailSecret', {
+          infer: true,
+        }),
+        expiresIn: this.configService.getOrThrow('auth.confirmEmailExpires', {
+          infer: true,
+        }),
+      },
+    );
+    const code = generateUniqueCode(hash);
+
+    if (!user) {
+      await this.mailService.login({
+        to: loginDto.email,
+        data: {
+          token,
+          code,
+          type: 'signup',
+        },
+      });
+      return {
+        hash: token,
+      };
+    }
+
+    await this.mailService.login({
+      to: loginDto.email,
+      data: {
+        token,
+        code,
+        type: 'login',
+      },
+    });
+    return {
+      hash: token,
+    };
+  }
+
+  //
   async register(dto: AuthRegisterLoginDto): Promise<AuthResponseType> {
     const user = await this.usersService.create({
       ...dto,
@@ -209,7 +267,6 @@ export class AuthService {
         id: StatusEnum.active,
       },
     });
-    console.log("🚀 ~ AuthService ~ register ~ user:", user)
 
     // const hash = await this.jwtService.signAsync(
     //   {
@@ -233,7 +290,7 @@ export class AuthService {
       user,
       hash,
     });
-    console.log("🚀 ~ AuthService ~ register ~ session:", session)
+    console.log('🚀 ~ AuthService ~ register ~ session:', session);
 
     const { token, refreshToken, tokenExpires } = await this.getTokensData({
       id: user.id,
@@ -241,8 +298,6 @@ export class AuthService {
       sessionId: session.id,
       hash,
     });
-    console.log("🚀 ~ AuthService ~ register ~ tokenExpires:", tokenExpires)
-    console.log("🚀 ~ AuthService ~ register ~ refreshToken:", refreshToken)
 
     return {
       refreshToken,
@@ -271,6 +326,7 @@ export class AuthService {
         }),
       });
 
+      console.log('🚀 ~ AuthService ~ confirmEmail ~ jwtData:', jwtData);
       userId = jwtData.confirmEmailUserId;
     } catch {
       throw new UnprocessableEntityException({

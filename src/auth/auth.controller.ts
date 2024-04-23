@@ -23,6 +23,8 @@ import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
 import { AuthResponseType } from './types/login-response.type';
 import { NullableType } from '../utils/types/nullable.type';
 import { User } from '../users/domain/user';
+import { LoginResponseType } from './types/login-mailing-response.type';
+import { AuthLoginDto } from './dto/auth-login.dto';
 
 @ApiTags('Auth')
 @Controller({
@@ -37,15 +39,26 @@ export class AuthController {
   })
   @Post('email/login')
   @HttpCode(HttpStatus.OK)
-  public login(
+  public emailLogin(
     @Body() loginDto: AuthEmailLoginDto,
   ): Promise<AuthResponseType> {
     return this.service.validateLogin(loginDto);
   }
 
+  @SerializeOptions({
+    groups: ['me'],
+  })
+  @Post('/login')
+  @HttpCode(HttpStatus.OK)
+  public login(@Body() loginDto: AuthLoginDto): Promise<LoginResponseType> {
+    return this.service.login(loginDto);
+  }
+
   @Post('email/register')
   @HttpCode(HttpStatus.OK)
-  async register(@Body() createUserDto: AuthRegisterLoginDto): Promise<AuthResponseType> {
+  async register(
+    @Body() createUserDto: AuthRegisterLoginDto,
+  ): Promise<AuthResponseType> {
     return this.service.register(createUserDto);
   }
 
