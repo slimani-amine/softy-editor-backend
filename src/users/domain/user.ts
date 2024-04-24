@@ -20,7 +20,7 @@ export class User {
 
   @Expose({ groups: ['me', 'admin'] })
   socialId?: string | null;
-  userName: string | null;
+  userName?: string | null;
   photo?: FileType | null;
   role?: Role | null;
   status?: Status;

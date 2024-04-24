@@ -31,6 +31,7 @@ import { User } from '../users/domain/user';
 import { AuthLoginDto } from './dto/auth-login.dto';
 import { LoginResponseType } from './types/login-mailing-response.type';
 import { generateUniqueCode } from 'src/utils/generateUniqueCode';
+import { isCreatedAtNow } from 'src/utils/isCreatedAtNow';
 
 @Injectable()
 export class AuthService {
@@ -201,57 +202,55 @@ export class AuthService {
     };
   }
 
-  async login(loginDto: AuthLoginDto): Promise<LoginResponseType> {
-    const user = await this.usersService.findOne({
+  async login(loginDto: AuthLoginDto): Promise<AuthResponseType> {
+    let user = await this.usersService.findOne({
       email: loginDto.email,
     });
-
+    if (!user) {
+      user = await this.usersService.create({
+        ...loginDto,
+        email: loginDto.email,
+        role: {
+          id: RoleEnum.user,
+        },
+        status: {
+          // set the user inactive before the onBording 
+          id: StatusEnum.inactive,
+        },
+      });
+    }
+    console.log('🚀 ~ AuthService ~ login ~ user:', user);
     const hash = crypto
       .createHash('sha256')
       .update(randomStringGenerator())
       .digest('hex');
 
-    const token = await this.jwtService.signAsync(
-      {
-        email: loginDto.email,
-        new: user ? false : true,
-        hash: hash,
-      },
-      {
-        secret: this.configService.getOrThrow('auth.confirmEmailSecret', {
-          infer: true,
-        }),
-        expiresIn: this.configService.getOrThrow('auth.confirmEmailExpires', {
-          infer: true,
-        }),
-      },
-    );
-    const code = generateUniqueCode(hash);
+    const session = await this.sessionService.create({
+      user,
+      hash,
+    });
 
-    if (!user) {
-      await this.mailService.login({
-        to: loginDto.email,
-        data: {
-          token,
-          code,
-          type: 'signup',
-        },
-      });
-      return {
-        hash: token,
-      };
-    }
+    const { token, refreshToken, tokenExpires } = await this.getTokensData({
+      id: user.id,
+      role: user.role,
+      email: loginDto.email,
+      sessionId: session.id,
+      hash,
+    });
+    const code = generateUniqueCode(hash);
 
     await this.mailService.login({
       to: loginDto.email,
       data: {
         token,
         code,
-        type: 'login',
       },
     });
     return {
-      hash: token,
+      refreshToken,
+      token,
+      tokenExpires,
+      user,
     };
   }
 
@@ -573,6 +572,8 @@ export class AuthService {
 
   private async getTokensData(data: {
     id: User['id'];
+    email?: User['email'];
+    new?: boolean;
     role: User['role'];
     sessionId: Session['id'];
     hash: Session['hash'];
@@ -587,8 +588,11 @@ export class AuthService {
       await this.jwtService.signAsync(
         {
           id: data.id,
+          email: data?.email,
+          new: data?.new,
           role: data.role,
           sessionId: data.sessionId,
+          hash: data?.hash,
         },
         {
           secret: this.configService.getOrThrow('auth.secret', { infer: true }),

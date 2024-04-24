@@ -63,12 +63,10 @@ export class MailService {
     });
   }
 
-
   async login(
     mailData: MailData<{
       token: string;
       code: string;
-      type: 'login' | 'signup';
     }>,
   ): Promise<void> {
     const i18n = I18nContext.current();
@@ -86,17 +84,9 @@ export class MailService {
       ]);
     }
 
-    const url = new URL(
-      this.configService.getOrThrow('app.frontendDomain', {
-        infer: true,
-      }) + '/login',
-    );
-    url.searchParams.set('token', mailData.data.token);
-
     await this.mailerService.sendMail({
       to: mailData.to,
       subject: emailConfirmTitle,
-      text: `${url.toString()} ${mailData.data.code}`,
       templatePath: path.join(
         this.configService.getOrThrow('app.workingDirectory', {
           infer: true,
@@ -108,13 +98,10 @@ export class MailService {
       ),
       context: {
         title: emailConfirmTitle,
-        url: url.toString(),
+        url: '',
         actionTitle: emailConfirmTitle,
         app_name: this.configService.get('app.name', { infer: true }),
-        text1:
-          mailData.data.type === 'login'
-            ? 'Log in to E-ditor'
-            : 'Sign up for E-ditor',
+        text1: 'Welcome to E-ditor',
         text2,
         text3: text3 + mailData.data.code,
       },

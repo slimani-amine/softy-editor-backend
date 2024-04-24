@@ -50,7 +50,7 @@ export class AuthController {
   })
   @Post('/login')
   @HttpCode(HttpStatus.OK)
-  public login(@Body() loginDto: AuthLoginDto): Promise<LoginResponseType> {
+  public login(@Body() loginDto: AuthLoginDto): Promise<AuthResponseType> {
     return this.service.login(loginDto);
   }
 

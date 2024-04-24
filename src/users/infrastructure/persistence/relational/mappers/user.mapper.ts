@@ -60,7 +60,7 @@ export class UserMapper {
     userEntity.previousPassword = user.previousPassword;
     userEntity.provider = user.provider;
     userEntity.socialId = user.socialId;
-    userEntity.userName = user.userName;
+    userEntity.userName = user.userName as string;
     userEntity.photo = photo;
     userEntity.role = role;
     userEntity.status = status;
