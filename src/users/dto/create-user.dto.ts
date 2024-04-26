@@ -5,6 +5,7 @@ import { FileDto } from '../../files/dto/file.dto';
 import { RoleDto } from '../../roles/dto/role.dto';
 import { StatusDto } from '../../statuses/dto/status.dto';
 import { lowerCaseTransformer } from '../../utils/transformers/lower-case.transformer';
+import { PlanDto } from 'src/plans/dto/plan.dto';
 
 export class CreateUserDto {
   @ApiProperty({ example: 'test1@example.com' })
@@ -25,9 +26,16 @@ export class CreateUserDto {
   @IsNotEmpty()
   userName?: string | null;
 
-  @ApiPropertyOptional({ type: () => FileDto })
+  // @ApiPropertyOptional({ type: () => FileDto })
+  // @IsOptional()
+  // photo?: FileDto | null;
+
+  @ApiPropertyOptional({
+    example:
+      'http://res.cloudinary.com/dm5d9jmf4/image/upload/v1714067220/oa9q1mwiijdzpnqrfb11.svg',
+  })
   @IsOptional()
-  photo?: FileDto | null;
+  photo?: string | null;
 
   @ApiPropertyOptional({ type: RoleDto })
   @IsOptional()
@@ -38,6 +46,11 @@ export class CreateUserDto {
   @IsOptional()
   @Type(() => StatusDto)
   status?: StatusDto;
+
+  @ApiPropertyOptional({ type: PlanDto })
+  @IsOptional()
+  @Type(() => PlanDto)
+  plan?: PlanDto;
 
   hash?: string | null;
 }

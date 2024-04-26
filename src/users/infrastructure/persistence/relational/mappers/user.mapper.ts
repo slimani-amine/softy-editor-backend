@@ -1,3 +1,4 @@
+import { PlanEntity } from 'src/plans/infrastructure/persistence/relational/entities/plan.entity';
 import { FileEntity } from '../../../../../files/infrastructure/persistence/relational/entities/file.entity';
 import { FileMapper } from '../../../../../files/infrastructure/persistence/relational/mappers/file.mapper';
 import { RoleEntity } from '../../../../../roles/infrastructure/persistence/relational/entities/role.entity';
@@ -15,9 +16,10 @@ export class UserMapper {
     user.provider = raw.provider;
     user.socialId = raw.socialId;
     user.userName = raw.userName;
-    if (raw.photo) {
-      user.photo = FileMapper.toDomain(raw.photo);
-    }
+    user.photo = raw.photo;
+    // if (raw.photo) {
+    //   user.photo = FileMapper.toDomain(raw.photo);
+    // }
     user.role = raw.role;
     user.status = raw.status;
     user.createdAt = raw.createdAt;
@@ -34,21 +36,28 @@ export class UserMapper {
       role.id = user.role.id;
     }
 
-    let photo: FileEntity | undefined | null = undefined;
+    let photo: string | undefined | null = undefined;
 
-    if (user.photo) {
-      photo = new FileEntity();
-      photo.id = user.photo.id;
-      photo.path = user.photo.path;
-    } else if (user.photo === null) {
-      photo = null;
-    }
+    // if (user.photo) {
+    //   photo = new FileEntity();
+    //   photo.id = user.photo.id;
+    //   photo.path = user.photo.path;
+    // } else if (user.photo === null) {
+    //   photo = null;
+    // }
 
     let status: StatusEntity | undefined = undefined;
 
     if (user.status) {
       status = new StatusEntity();
       status.id = user.status.id;
+    }
+
+    let plan: PlanEntity | undefined = undefined;
+
+    if (user.plan) {
+      plan = new PlanEntity();
+      plan.id = user.plan.id;
     }
 
     const userEntity = new UserEntity();
@@ -61,9 +70,10 @@ export class UserMapper {
     userEntity.provider = user.provider;
     userEntity.socialId = user.socialId;
     userEntity.userName = user.userName as string;
-    userEntity.photo = photo;
+    userEntity.photo = user.photo as string;
     userEntity.role = role;
     userEntity.status = status;
+    userEntity.plan = plan;
     userEntity.createdAt = user.createdAt;
     userEntity.updatedAt = user.updatedAt;
     userEntity.deletedAt = user.deletedAt;
