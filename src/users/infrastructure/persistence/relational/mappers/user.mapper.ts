@@ -22,6 +22,7 @@ export class UserMapper {
     // }
     user.role = raw.role;
     user.status = raw.status;
+    user.plan = raw.plan;
     user.createdAt = raw.createdAt;
     user.updatedAt = raw.updatedAt;
     user.deletedAt = raw.deletedAt;

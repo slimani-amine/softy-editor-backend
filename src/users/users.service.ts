@@ -233,14 +233,15 @@ export class UsersService {
     }
 
     if (clonedPayload.plan?.id) {
-      const statusObject = Object.values(PlanEnum).includes(
+      const planObject = Object.values(PlanEnum).includes(
         clonedPayload.plan.id,
       );
-      if (!statusObject) {
+      console.log('🚀 ~ UsersService ~ planObject:', planObject);
+      if (!planObject) {
         throw new UnprocessableEntityException({
           status: HttpStatus.UNPROCESSABLE_ENTITY,
           errors: {
-            status: 'statusNotExists',
+            status: 'planNotExists',
           },
         });
       }
