@@ -214,12 +214,11 @@ export class AuthService {
           id: RoleEnum.user,
         },
         status: {
-          // set the user inactive before the onBording 
+          // set the user inactive before the onBording
           id: StatusEnum.inactive,
         },
       });
     }
-    console.log('🚀 ~ AuthService ~ login ~ user:', user);
     const hash = crypto
       .createHash('sha256')
       .update(randomStringGenerator())
@@ -237,15 +236,20 @@ export class AuthService {
       sessionId: session.id,
       hash,
     });
-    const code = generateUniqueCode(hash);
 
-    await this.mailService.login({
-      to: loginDto.email,
-      data: {
-        token,
-        code,
-      },
-    });
+    if (user.provider !== 'email' || user?.status?.id === 2) {
+      const code = generateUniqueCode(hash);
+      console.log('🚀 ~ AuthService ~ login ~ code:', code);
+
+      await this.mailService.login({
+        to: loginDto.email,
+        data: {
+          token,
+          code,
+        },
+      });
+    }
+
     return {
       refreshToken,
       token,

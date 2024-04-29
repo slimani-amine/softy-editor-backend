@@ -174,20 +174,20 @@ export class UsersService {
       }
     }
 
-    if (clonedPayload.userName) {
-      const userObject = await this.usersRepository.findOne({
-        userName: clonedPayload.userName,
-      });
+    // if (clonedPayload.userName) {
+    //   const userObject = await this.usersRepository.findOne({
+    //     userName: clonedPayload.userName,
+    //   });
 
-      if (userObject && userObject.id !== id) {
-        throw new UnprocessableEntityException({
-          status: HttpStatus.UNPROCESSABLE_ENTITY,
-          errors: {
-            userName: 'userNameAlreadyExists',
-          },
-        });
-      }
-    }
+    //   if (userObject && userObject.id !== id) {
+    //     throw new UnprocessableEntityException({
+    //       status: HttpStatus.UNPROCESSABLE_ENTITY,
+    //       errors: {
+    //         userName: 'userNameAlreadyExists',
+    //       },
+    //     });
+    //   }
+    // }
 
     // if (clonedPayload.photo?.id) {
     //   const fileObject = await this.filesService.findOne({
