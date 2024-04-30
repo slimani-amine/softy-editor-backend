@@ -8,6 +8,8 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { RoleEntity } from '../../../../../roles/infrastructure/persistence/relational/entities/role.entity';
 import { StatusEntity } from '../../../../../statuses/infrastructure/persistence/relational/entities/status.entity';
@@ -21,6 +23,7 @@ import { EntityRelationalHelper } from '../../../../../utils/relational-entity-h
 // We duplicate these rules because you can choose not to use adapters
 // in your project and return an ORM entity directly in response.
 import { Exclude, Expose } from 'class-transformer';
+import { Workspace } from 'src/workspaces/infrastructure/persistence/relational/entities/workspace.entity';
 
 @Entity({
   name: 'user',
@@ -38,6 +41,9 @@ export class UserEntity extends EntityRelationalHelper implements User {
   @Column({ nullable: true })
   @Exclude({ toPlainOnly: true })
   password?: string;
+
+  @Column({ nullable: true })
+  phoneNumber?: number;
 
   @Exclude({ toPlainOnly: true })
   public previousPassword?: string;
@@ -74,6 +80,13 @@ export class UserEntity extends EntityRelationalHelper implements User {
     eager: true,
   })
   status?: StatusEntity;
+
+  // @OneToMany(() => Workspace, (workspace) => workspace.user)
+  // workspaces: Workspace[];
+
+  @ManyToMany(() => Workspace, (workspace) => workspace.members)
+  @JoinTable()
+  workspaces_members: Workspace[];
 
   @CreateDateColumn()
   createdAt: Date;

@@ -209,7 +209,7 @@ export class AuthService {
         id: StatusEnum.active,
       },
     });
-    console.log("🚀 ~ AuthService ~ register ~ user:", user)
+    console.log('🚀 ~ AuthService ~ register ~ user:', user);
 
     // const hash = await this.jwtService.signAsync(
     //   {
@@ -233,7 +233,7 @@ export class AuthService {
       user,
       hash,
     });
-    console.log("🚀 ~ AuthService ~ register ~ session:", session)
+    console.log('🚀 ~ AuthService ~ register ~ session:', session);
 
     const { token, refreshToken, tokenExpires } = await this.getTokensData({
       id: user.id,
@@ -241,8 +241,8 @@ export class AuthService {
       sessionId: session.id,
       hash,
     });
-    console.log("🚀 ~ AuthService ~ register ~ tokenExpires:", tokenExpires)
-    console.log("🚀 ~ AuthService ~ register ~ refreshToken:", refreshToken)
+    console.log('🚀 ~ AuthService ~ register ~ tokenExpires:', tokenExpires);
+    console.log('🚀 ~ AuthService ~ register ~ refreshToken:', refreshToken);
 
     return {
       refreshToken,

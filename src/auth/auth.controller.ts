@@ -37,15 +37,15 @@ export class AuthController {
   })
   @Post('email/login')
   @HttpCode(HttpStatus.OK)
-  public login(
-    @Body() loginDto: AuthEmailLoginDto,
-  ): Promise<AuthResponseType> {
+  public login(@Body() loginDto: AuthEmailLoginDto): Promise<AuthResponseType> {
     return this.service.validateLogin(loginDto);
   }
 
   @Post('email/register')
   @HttpCode(HttpStatus.OK)
-  async register(@Body() createUserDto: AuthRegisterLoginDto): Promise<AuthResponseType> {
+  async register(
+    @Body() createUserDto: AuthRegisterLoginDto,
+  ): Promise<AuthResponseType> {
     return this.service.register(createUserDto);
   }
 
