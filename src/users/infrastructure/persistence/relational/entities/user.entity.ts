@@ -13,7 +13,6 @@ import {
 } from 'typeorm';
 import { RoleEntity } from '../../../../../roles/infrastructure/persistence/relational/entities/role.entity';
 import { StatusEntity } from '../../../../../statuses/infrastructure/persistence/relational/entities/status.entity';
-import { FileEntity } from '../../../../../files/infrastructure/persistence/relational/entities/file.entity';
 
 import { User } from '../../../../domain/user';
 import { AuthProvidersEnum } from '../../../../../auth/auth-providers.enum';
@@ -24,6 +23,7 @@ import { EntityRelationalHelper } from '../../../../../utils/relational-entity-h
 // in your project and return an ORM entity directly in response.
 import { Exclude, Expose } from 'class-transformer';
 import { PlanEntity } from 'src/plans/infrastructure/persistence/relational/entities/plan.entity';
+import { Workspace } from 'src/workspaces/infrastructure/persistence/relational/entities/workspace.entity';
 
 @Entity({
   name: 'user',
@@ -88,6 +88,10 @@ export class UserEntity extends EntityRelationalHelper implements User {
     eager: true,
   })
   plan?: PlanEntity;
+
+  @ManyToMany(() => Workspace, (workspace) => workspace.members)
+  @JoinTable()
+  workspaces_members: Workspace[];
 
   @CreateDateColumn()
   createdAt: Date;
