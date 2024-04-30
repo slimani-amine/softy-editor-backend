@@ -9,6 +9,7 @@ import { AuthProvidersEnum } from '../../../../../auth/auth-providers.enum';
 import { FileSchemaClass } from '../../../../../files/infrastructure/persistence/document/entities/file.schema';
 import { Role } from '../../../../../roles/domain/role';
 import { Status } from '../../../../../statuses/domain/status';
+import { Plan } from '../../../../../plans/domain/plan';
 import { EntityDocumentHelper } from '../../../../../utils/document-entity-helper';
 
 export type UserSchemaDocument = HydratedDocument<UserSchemaClass>;
@@ -54,10 +55,15 @@ export class UserSchemaClass extends EntityDocumentHelper {
   userName: string | null;
 
   @Prop({
-    type: FileSchemaClass,
+    type: String,
   })
-  @Type(() => FileSchemaClass)
-  photo?: FileSchemaClass | null;
+  photo: string | null;
+
+  // @Prop({
+  //   type: FileSchemaClass,
+  // })
+  // @Type(() => FileSchemaClass)
+  // photo?: FileSchemaClass | null;
 
   @Prop({
     type: Role,
@@ -68,6 +74,11 @@ export class UserSchemaClass extends EntityDocumentHelper {
     type: Status,
   })
   status?: Status;
+
+  @Prop({
+    type: Plan,
+  })
+  plan?: Plan;
 
   @Prop({ default: now })
   createdAt: Date;

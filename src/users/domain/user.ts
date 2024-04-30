@@ -2,6 +2,7 @@ import { Exclude, Expose } from 'class-transformer';
 import { FileType } from '../../files/domain/file';
 import { Role } from '../../roles/domain/role';
 import { Status } from '../../statuses/domain/status';
+import { Plan } from 'src/plans/domain/plan';
 
 export class User {
   id: number | string;
@@ -20,10 +21,12 @@ export class User {
 
   @Expose({ groups: ['me', 'admin'] })
   socialId?: string | null;
-  userName: string | null;
-  photo?: FileType | null;
+  userName?: string | null;
+  photo?: string | null;
+  // photo?: FileType | null;
   role?: Role | null;
   status?: Status;
+  plan?: Plan;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date;

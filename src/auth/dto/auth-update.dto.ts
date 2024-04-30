@@ -3,9 +3,13 @@ import { IsNotEmpty, IsOptional, MinLength } from 'class-validator';
 import { FileDto } from '../../files/dto/file.dto';
 
 export class AuthUpdateDto {
-  @ApiPropertyOptional({ type: () => FileDto })
+  // @ApiPropertyOptional({ type: () => FileDto })
+  // @IsOptional()
+  // photo?: FileDto | null;
+
+  @ApiPropertyOptional()
   @IsOptional()
-  photo?: FileDto | null;
+  photo?: string | null;
 
   @ApiPropertyOptional({ example: 'John' })
   @IsOptional()

@@ -16,6 +16,7 @@ import { RoleEnum } from '../roles/roles.enum';
 import { StatusEnum } from '../statuses/statuses.enum';
 import { EntityCondition } from '../utils/types/entity-condition.type';
 import { IPaginationOptions } from '../utils/types/pagination-options';
+import { PlanEnum } from 'src/plans/plans.enum';
 
 @Injectable()
 export class UsersService {
@@ -63,20 +64,20 @@ export class UsersService {
       }
     }
 
-    if (clonedPayload.photo?.id) {
-      const fileObject = await this.filesService.findOne({
-        id: clonedPayload.photo.id,
-      });
-      if (!fileObject) {
-        throw new UnprocessableEntityException({
-          status: HttpStatus.UNPROCESSABLE_ENTITY,
-          errors: {
-            photo: 'imageNotExists',
-          },
-        });
-      }
-      clonedPayload.photo = fileObject;
-    }
+    // if (clonedPayload.photo?.id) {
+    //   const fileObject = await this.filesService.findOne({
+    //     id: clonedPayload.photo.id,
+    //   });
+    //   if (!fileObject) {
+    //     throw new UnprocessableEntityException({
+    //       status: HttpStatus.UNPROCESSABLE_ENTITY,
+    //       errors: {
+    //         photo: 'imageNotExists',
+    //       },
+    //     });
+    //   }
+    //   clonedPayload.photo = fileObject;
+    // }
 
     if (clonedPayload.role?.id) {
       const roleObject = Object.values(RoleEnum).includes(
@@ -101,6 +102,20 @@ export class UsersService {
           status: HttpStatus.UNPROCESSABLE_ENTITY,
           errors: {
             status: 'statusNotExists',
+          },
+        });
+      }
+    }
+
+    if (clonedPayload.plan?.id) {
+      const statusObject = Object.values(PlanEnum).includes(
+        clonedPayload.plan.id,
+      );
+      if (!statusObject) {
+        throw new UnprocessableEntityException({
+          status: HttpStatus.UNPROCESSABLE_ENTITY,
+          errors: {
+            status: 'planNotExists',
           },
         });
       }
@@ -133,6 +148,7 @@ export class UsersService {
     id: User['id'],
     payload: DeepPartial<User>,
   ): Promise<User | null> {
+    console.log('🚀 ~ UsersService ~ payload:', payload);
     const clonedPayload = { ...payload };
 
     if (
@@ -158,20 +174,35 @@ export class UsersService {
       }
     }
 
-    if (clonedPayload.photo?.id) {
-      const fileObject = await this.filesService.findOne({
-        id: clonedPayload.photo.id,
-      });
-      if (!fileObject) {
-        throw new UnprocessableEntityException({
-          status: HttpStatus.UNPROCESSABLE_ENTITY,
-          errors: {
-            photo: 'imageNotExists',
-          },
-        });
-      }
-      clonedPayload.photo = fileObject;
-    }
+    // if (clonedPayload.userName) {
+    //   const userObject = await this.usersRepository.findOne({
+    //     userName: clonedPayload.userName,
+    //   });
+
+    //   if (userObject && userObject.id !== id) {
+    //     throw new UnprocessableEntityException({
+    //       status: HttpStatus.UNPROCESSABLE_ENTITY,
+    //       errors: {
+    //         userName: 'userNameAlreadyExists',
+    //       },
+    //     });
+    //   }
+    // }
+
+    // if (clonedPayload.photo?.id) {
+    //   const fileObject = await this.filesService.findOne({
+    //     id: clonedPayload.photo.id,
+    //   });
+    //   if (!fileObject) {
+    //     throw new UnprocessableEntityException({
+    //       status: HttpStatus.UNPROCESSABLE_ENTITY,
+    //       errors: {
+    //         photo: 'imageNotExists',
+    //       },
+    //     });
+    //   }
+    //   clonedPayload.photo = fileObject;
+    // }
 
     if (clonedPayload.role?.id) {
       const roleObject = Object.values(RoleEnum).includes(
@@ -196,6 +227,21 @@ export class UsersService {
           status: HttpStatus.UNPROCESSABLE_ENTITY,
           errors: {
             status: 'statusNotExists',
+          },
+        });
+      }
+    }
+
+    if (clonedPayload.plan?.id) {
+      const planObject = Object.values(PlanEnum).includes(
+        clonedPayload.plan.id,
+      );
+      console.log('🚀 ~ UsersService ~ planObject:', planObject);
+      if (!planObject) {
+        throw new UnprocessableEntityException({
+          status: HttpStatus.UNPROCESSABLE_ENTITY,
+          errors: {
+            status: 'planNotExists',
           },
         });
       }

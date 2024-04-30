@@ -23,7 +23,7 @@ import { EntityRelationalHelper } from '../../../../../utils/relational-entity-h
 // We duplicate these rules because you can choose not to use adapters
 // in your project and return an ORM entity directly in response.
 import { Exclude, Expose } from 'class-transformer';
-import { Workspace } from 'src/workspaces/infrastructure/persistence/relational/entities/workspace.entity';
+import { PlanEntity } from 'src/plans/infrastructure/persistence/relational/entities/plan.entity';
 
 @Entity({
   name: 'user',
@@ -66,10 +66,13 @@ export class UserEntity extends EntityRelationalHelper implements User {
   @Column({ type: String, unique: true, nullable: true })
   userName: string | null;
 
-  @ManyToOne(() => FileEntity, {
-    eager: true,
-  })
-  photo?: FileEntity | null;
+  @Column({ type: String, unique: true, nullable: true })
+  photo: string | null;
+
+  // @ManyToOne(() => FileEntity, {
+  //   eager: true,
+  // })
+  // photo?: FileEntity | null;
 
   @ManyToOne(() => RoleEntity, {
     eager: true,
@@ -81,12 +84,10 @@ export class UserEntity extends EntityRelationalHelper implements User {
   })
   status?: StatusEntity;
 
-  // @OneToMany(() => Workspace, (workspace) => workspace.user)
-  // workspaces: Workspace[];
-
-  @ManyToMany(() => Workspace, (workspace) => workspace.members)
-  @JoinTable()
-  workspaces_members: Workspace[];
+  @ManyToOne(() => PlanEntity, {
+    eager: true,
+  })
+  plan?: PlanEntity;
 
   @CreateDateColumn()
   createdAt: Date;

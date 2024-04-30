@@ -28,8 +28,7 @@ import { RolesGuard } from '../roles/roles.guard';
 import { infinityPagination } from '../utils/infinity-pagination';
 
 @ApiBearerAuth()
-@Roles(RoleEnum.admin)
-@UseGuards(AuthGuard('jwt'), RolesGuard)
+// @UseGuards(AuthGuard('jwt'))
 @ApiTags('Users')
 @Controller({
   path: 'users',
@@ -88,9 +87,9 @@ export class UsersController {
     return this.usersService.findOne({ id });
   }
 
-  @SerializeOptions({
-    groups: ['admin'],
-  })
+  // @SerializeOptions({
+  //   groups: ['admin'],
+  // })
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
   @ApiParam({
@@ -102,6 +101,8 @@ export class UsersController {
     @Param('id') id: User['id'],
     @Body() updateProfileDto: UpdateUserDto,
   ): Promise<User | null> {
+    console.log(updateProfileDto);
+
     return this.usersService.update(id, updateProfileDto);
   }
 

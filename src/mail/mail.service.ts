@@ -63,6 +63,51 @@ export class MailService {
     });
   }
 
+  async login(
+    mailData: MailData<{
+      token: string;
+      code: string;
+    }>,
+  ): Promise<void> {
+    const i18n = I18nContext.current();
+    let emailConfirmTitle: MaybeType<string>;
+    let text1: MaybeType<string>;
+    let text2: MaybeType<string>;
+    let text3: MaybeType<string>;
+
+    if (i18n) {
+      [emailConfirmTitle, text1, text2, text3] = await Promise.all([
+        i18n.t('common.confirmEmail'),
+        i18n.t('confirm-email.text1'),
+        i18n.t('confirm-email.text2'),
+        i18n.t('confirm-email.text3'),
+      ]);
+    }
+
+    await this.mailerService.sendMail({
+      to: mailData.to,
+      subject: emailConfirmTitle,
+      templatePath: path.join(
+        this.configService.getOrThrow('app.workingDirectory', {
+          infer: true,
+        }),
+        'src',
+        'mail',
+        'mail-templates',
+        'activation.hbs',
+      ),
+      context: {
+        title: emailConfirmTitle,
+        url: '',
+        actionTitle: emailConfirmTitle,
+        app_name: this.configService.get('app.name', { infer: true }),
+        text1: 'Welcome to E-ditor',
+        text2,
+        text3: text3 + mailData.data.code,
+      },
+    });
+  }
+
   async forgotPassword(
     mailData: MailData<{ hash: string; tokenExpires: number }>,
   ): Promise<void> {
@@ -86,7 +131,7 @@ export class MailService {
     const url = new URL(
       this.configService.getOrThrow('app.frontendDomain', {
         infer: true,
-      }) + '/password-change',
+      }) + '/reset-password',
     );
     url.searchParams.set('hash', mailData.data.hash);
     url.searchParams.set('expires', mailData.data.tokenExpires.toString());

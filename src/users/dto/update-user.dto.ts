@@ -7,6 +7,7 @@ import { FileDto } from '../../files/dto/file.dto';
 import { RoleDto } from '../../roles/dto/role.dto';
 import { StatusDto } from '../../statuses/dto/status.dto';
 import { lowerCaseTransformer } from '../../utils/transformers/lower-case.transformer';
+import { PlanDto } from 'src/plans/dto/plan.dto';
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
   @ApiPropertyOptional({ example: 'test1@example.com' })
@@ -28,9 +29,9 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsOptional()
   userName?: string | null;
 
-  @ApiPropertyOptional({ type: FileDto })
+  @ApiPropertyOptional()
   @IsOptional()
-  photo?: FileDto | null;
+  photo?: string | null;
 
   @ApiPropertyOptional({ type: RoleDto })
   @IsOptional()
@@ -41,6 +42,11 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsOptional()
   @Type(() => StatusDto)
   status?: StatusDto;
+
+  @ApiPropertyOptional({ type: PlanDto })
+  @IsOptional()
+  @Type(() => PlanDto)
+  plan?: PlanDto;
 
   hash?: string | null;
 }
