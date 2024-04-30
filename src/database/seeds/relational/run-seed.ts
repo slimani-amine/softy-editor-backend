@@ -3,7 +3,7 @@ import { RoleSeedService } from './role/role-seed.service';
 import { SeedModule } from './seed.module';
 import { StatusSeedService } from './status/status-seed.service';
 import { UserSeedService } from './user/user-seed.service';
-import { PlanSeedService } from './status copy/plan-seed.service';
+import { PlanSeedService } from './plan/plan-seed.service';
 
 const runSeed = async () => {
   const app = await NestFactory.create(SeedModule);
