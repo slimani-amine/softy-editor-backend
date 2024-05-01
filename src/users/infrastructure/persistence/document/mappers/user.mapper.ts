@@ -5,6 +5,7 @@ import { FileMapper } from '../../../../../files/infrastructure/persistence/docu
 import { Role } from '../../../../../roles/domain/role';
 import { Status } from '../../../../../statuses/domain/status';
 import { Plan } from 'src/plans/domain/plan';
+import { Offer } from 'src/offres/domain/offer';
 
 export class UserMapper {
   static toDomain(raw: UserSchemaClass): User {
@@ -25,6 +26,7 @@ export class UserMapper {
     user.role = raw.role;
     user.status = raw.status;
     user.plan = raw.plan;
+    user.offer = raw.offer;
     user.createdAt = raw.createdAt;
     user.updatedAt = raw.updatedAt;
     user.deletedAt = raw.deletedAt;
@@ -60,6 +62,13 @@ export class UserMapper {
       plan.id = user.plan.id;
     }
 
+    let offer: Offer | undefined = undefined;
+    if (user.offer) {
+      offer = new Plan();
+      offer.id = user.offer.id;
+    }
+
+
     const userEntity = new UserSchemaClass();
     if (user.id && typeof user.id === 'string') {
       userEntity._id = user.id;
@@ -74,6 +83,7 @@ export class UserMapper {
     userEntity.role = role;
     userEntity.status = status;
     userEntity.plan = plan;
+    userEntity.offer = offer;
     userEntity.createdAt = user.createdAt;
     userEntity.updatedAt = user.updatedAt;
     userEntity.deletedAt = user.deletedAt;

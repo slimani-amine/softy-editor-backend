@@ -239,7 +239,6 @@ export class AuthService {
 
     if (user.provider !== 'email' || user?.status?.id === 2) {
       const code = generateUniqueCode(hash);
-      console.log('🚀 ~ AuthService ~ login ~ code:', code);
 
       await this.mailService.login({
         to: loginDto.email,
@@ -293,7 +292,6 @@ export class AuthService {
       user,
       hash,
     });
-    console.log('🚀 ~ AuthService ~ register ~ session:', session);
 
     const { token, refreshToken, tokenExpires } = await this.getTokensData({
       id: user.id,
@@ -329,7 +327,6 @@ export class AuthService {
         }),
       });
 
-      console.log('🚀 ~ AuthService ~ confirmEmail ~ jwtData:', jwtData);
       userId = jwtData.confirmEmailUserId;
     } catch {
       throw new UnprocessableEntityException({

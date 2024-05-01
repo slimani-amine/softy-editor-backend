@@ -5,6 +5,7 @@ import { RoleEntity } from '../../../../../roles/infrastructure/persistence/rela
 import { StatusEntity } from '../../../../../statuses/infrastructure/persistence/relational/entities/status.entity';
 import { User } from '../../../../domain/user';
 import { UserEntity } from '../entities/user.entity';
+import { OfferEntity } from 'src/offres/infrastructure/persistence/relational/entities/offre.entity';
 
 export class UserMapper {
   static toDomain(raw: UserEntity): User {
@@ -23,6 +24,7 @@ export class UserMapper {
     user.role = raw.role;
     user.status = raw.status;
     user.plan = raw.plan;
+    user.offer = raw.offer;
     user.createdAt = raw.createdAt;
     user.updatedAt = raw.updatedAt;
     user.deletedAt = raw.deletedAt;
@@ -61,6 +63,13 @@ export class UserMapper {
       plan.id = user.plan.id;
     }
 
+    let offer: OfferEntity | undefined = undefined;
+
+    if (user.offer) {
+      offer = new OfferEntity();
+      offer.id = user.offer.id;
+    }
+
     const userEntity = new UserEntity();
     if (user.id && typeof user.id === 'number') {
       userEntity.id = user.id;
@@ -75,6 +84,7 @@ export class UserMapper {
     userEntity.role = role;
     userEntity.status = status;
     userEntity.plan = plan;
+    userEntity.offer = offer;
     userEntity.createdAt = user.createdAt;
     userEntity.updatedAt = user.updatedAt;
     userEntity.deletedAt = user.deletedAt;

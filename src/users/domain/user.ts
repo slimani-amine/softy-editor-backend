@@ -3,6 +3,7 @@ import { FileType } from '../../files/domain/file';
 import { Role } from '../../roles/domain/role';
 import { Status } from '../../statuses/domain/status';
 import { Plan } from 'src/plans/domain/plan';
+import { Offer } from 'src/offres/domain/offer';
 
 export class User {
   id: number | string;
@@ -27,6 +28,7 @@ export class User {
   role?: Role | null;
   status?: Status;
   plan?: Plan;
+  offer?: Offer;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date;

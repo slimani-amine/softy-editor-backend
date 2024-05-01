@@ -121,6 +121,8 @@ export class UsersService {
       }
     }
 
+    clonedPayload.offer = { id: 1 };
+
     return this.usersRepository.create(clonedPayload);
   }
 
@@ -148,7 +150,6 @@ export class UsersService {
     id: User['id'],
     payload: DeepPartial<User>,
   ): Promise<User | null> {
-    console.log('🚀 ~ UsersService ~ payload:', payload);
     const clonedPayload = { ...payload };
 
     if (
@@ -236,7 +237,6 @@ export class UsersService {
       const planObject = Object.values(PlanEnum).includes(
         clonedPayload.plan.id,
       );
-      console.log('🚀 ~ UsersService ~ planObject:', planObject);
       if (!planObject) {
         throw new UnprocessableEntityException({
           status: HttpStatus.UNPROCESSABLE_ENTITY,

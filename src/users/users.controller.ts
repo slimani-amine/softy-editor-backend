@@ -101,7 +101,6 @@ export class UsersController {
     @Param('id') id: User['id'],
     @Body() updateProfileDto: UpdateUserDto,
   ): Promise<User | null> {
-    console.log(updateProfileDto);
 
     return this.usersService.update(id, updateProfileDto);
   }

@@ -24,6 +24,7 @@ import { EntityRelationalHelper } from '../../../../../utils/relational-entity-h
 import { Exclude, Expose } from 'class-transformer';
 import { PlanEntity } from 'src/plans/infrastructure/persistence/relational/entities/plan.entity';
 import { Workspace } from 'src/workspaces/infrastructure/persistence/relational/entities/workspace.entity';
+import { OfferEntity } from 'src/offres/infrastructure/persistence/relational/entities/offre.entity';
 
 @Entity({
   name: 'user',
@@ -63,10 +64,10 @@ export class UserEntity extends EntityRelationalHelper implements User {
   socialId?: string | null;
 
   @Index()
-  @Column({ type: String, unique: true, nullable: true })
+  @Column({ type: String, nullable: true })
   userName: string | null;
 
-  @Column({ type: String, unique: true, nullable: true })
+  @Column({ type: String, nullable: true })
   photo: string | null;
 
   // @ManyToOne(() => FileEntity, {
@@ -88,6 +89,11 @@ export class UserEntity extends EntityRelationalHelper implements User {
     eager: true,
   })
   plan?: PlanEntity;
+
+  @ManyToOne(() => OfferEntity, {
+    eager: true,
+  })
+  offer?: OfferEntity;
 
   @ManyToMany(() => Workspace, (workspace) => workspace.members)
   @JoinTable()

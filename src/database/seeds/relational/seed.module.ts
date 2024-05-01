@@ -10,12 +10,14 @@ import { UserSeedModule } from './user/user-seed.module';
 import databaseConfig from '../../config/database.config';
 import appConfig from '../../../config/app.config';
 import { PlanSeedModule } from './plan/plan-seed.module';
+import { OfferSeedModule } from './offer/offer-seed.module';
 
 @Module({
   imports: [
     RoleSeedModule,
     StatusSeedModule,
     PlanSeedModule,
+    OfferSeedModule,
     UserSeedModule,
     ConfigModule.forRoot({
       isGlobal: true,

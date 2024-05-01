@@ -67,8 +67,6 @@ export class UsersRelationalRepository implements UserRepository {
   }
 
   async update(id: User['id'], payload: Partial<User>): Promise<User> {
-    console.log("🚀 ~ UsersRelationalRepository ~ update ~ id:", id)
-    console.log("🚀 ~ UsersRelationalRepository ~ update ~ payload:", payload)
     const entity = await this.usersRepository.findOne({
       where: { id: Number(id) },
     });

@@ -11,6 +11,7 @@ import { Role } from '../../../../../roles/domain/role';
 import { Status } from '../../../../../statuses/domain/status';
 import { Plan } from '../../../../../plans/domain/plan';
 import { EntityDocumentHelper } from '../../../../../utils/document-entity-helper';
+import { Offer } from 'src/offres/domain/offer';
 
 export type UserSchemaDocument = HydratedDocument<UserSchemaClass>;
 
@@ -79,6 +80,11 @@ export class UserSchemaClass extends EntityDocumentHelper {
     type: Plan,
   })
   plan?: Plan;
+
+  @Prop({
+    type: Offer,
+  })
+  offer?: Offer;
 
   @Prop({ default: now })
   createdAt: Date;
