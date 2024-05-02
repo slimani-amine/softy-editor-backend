@@ -1,25 +1,22 @@
-import { DynamicModule, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { StripeController } from './stripe.controller';
 import { StripeService } from './stripe.service';
-import stripeConfig from './config/stripe.config';
 
-@Module({})
-export class StripeModule {
-  static forRootAsync(): DynamicModule {
-    return {
-      module: StripeModule,
-      controllers: [StripeController],
-      imports: [ConfigModule.forRoot()],
-      providers: [
-        StripeService,
-        {
-          provide: 'STRIPE_API_KEY',
-          useFactory: () =>
-            'pk_test_51PBdod2K3pXBPKaKGXtBSyW1SZwCnRUh4m9zcSGfDTNOOD9qw2oKEjUURojkIFgl7Hcl5SrehdhtztfXU0BBWycT00plE0hkhR',
-          inject: [ConfigService],
-        },
-      ],
-    };
-  }
-}
+@Module({
+  imports: [
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get('JWT_SECRET'), // Adjust this based on your actual secret key configuration
+        signOptions: { expiresIn: '1h' }, // Adjust expiration time as needed
+      }),
+      inject: [ConfigService],
+    }),
+    // Other imports...
+  ],
+  controllers: [StripeController],
+  providers: [StripeService],
+})
+export class StripeModule {}
