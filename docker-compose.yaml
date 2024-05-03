@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: ${DATABASE_USERNAME}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_DB: ${DATABASE_NAME}
-
+ 
   maildev:
     build:
       context: .
@@ -17,25 +17,55 @@ services:
     ports:
       - ${MAIL_CLIENT_PORT}:1080
       - ${MAIL_PORT}:1025
-
+ 
   adminer:
     image: adminer
     restart: always
     ports:
       - 8080:8080
-
+ 
   # Uncomment to use redis
   # redis:
   #   image: redis:7-alpine
   #   ports:
   #     - 6379:6379
-
+ 
   api:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - ${APP_PORT}:${APP_PORT}
-
+    depends_on:
+      - postgres
+      - maildev
+      # Uncomment to use redis
+      # - redis
+  metrics:
+    image: prom/node-exporter
+    ports:
+      - ${METRICS_PORT}:${METRICS_PORT}
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    ports:
+      - ${PROMETHEUS_PORT}:${PROMETHEUS_PORT}
+    depends_on:
+      - api
+      - metrics
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - ${GRAFANA_PORT}:${GRAFANA_PORT}
+    volumes:
+      - grafana_data:/var/lib/grafana
 volumes:
   boilerplate-db:
+  prometheus-data:
+  grafana_data:
