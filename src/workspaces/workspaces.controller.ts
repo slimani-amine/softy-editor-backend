@@ -15,6 +15,7 @@ import { WorkspacesService } from './workspaces.service';
 import { Workspace } from './infrastructure/persistence/relational/entities/workspace.entity';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { UpdateWorkspaceDto } from './dto/update-workspace.dto';
+import { AuditLog } from 'src/audit/decorators/audit-log.decorator';
 
 @Controller('v1/workspaces')
 @UseGuards(AuthGuard('jwt'))
@@ -32,6 +33,7 @@ export class WorkspacesController {
   }
 
   @Post()
+  @AuditLog('add-workspace')
   createWorkspace(
     @Body() body: CreateWorkspaceDto,
     @Request() request,
@@ -40,11 +42,13 @@ export class WorkspacesController {
   }
 
   @Patch(':id')
+  @AuditLog('update-workspace')
   updateWorkspace(@Param('id') id: number, @Body() body: UpdateWorkspaceDto) {
     return this.workspacesService.update(id, body);
   }
 
   @Delete(':id')
+  @AuditLog('delete-workspace')
   deleteWorkspace(@Param('id') id: number) {
     return this.workspacesService.delete(id);
   }

@@ -14,12 +14,7 @@ import { DocumentsService } from './documents.service';
 import { Document } from './infrastructure/persistence/relational/entities/document.entity';
 import { UpdateDocumentDto } from './dto/update-document.dto';
 import { AuthGuard } from '@nestjs/passport';
-
-//
-// import { Serialize } from 'src/interceptors/serialize.interceptor';
-// import { DocumentDto } from './dto/document.dto';
-// @Serialize(DocumentDto)
-//
+import { AuditLog } from 'src/audit/decorators/audit-log.decorator';
 
 @Controller('v1/documents')
 @UseGuards(AuthGuard('jwt'))
@@ -40,15 +35,18 @@ export class DocumentsController {
   }
 
   @Post()
+  @AuditLog('create-document')
   createDocument(@Body() body: CreateDocumentDto): Promise<Document> {
     return this.documentsService.create(body);
   }
 
   @Patch(':id')
+  @AuditLog('update-document')
   updateDocument(@Param('id') id: number, @Body() body: UpdateDocumentDto) {
     return this.documentsService.update(id, body);
   }
   @Delete(':id')
+  @AuditLog('delete-document')
   deleteDocument(@Param('id') id: number) {
     return this.documentsService.delete(id);
   }

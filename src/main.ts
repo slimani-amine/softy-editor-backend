@@ -12,6 +12,12 @@ import { AppModule } from './app.module';
 import validationOptions from './utils/validation-options';
 import { AllConfigType } from './config/config.type';
 import { ResolvePromisesInterceptor } from './utils/serializer.interceptor';
+import {
+  restResponseTimeHistogram,
+  startMetricsServer,
+} from './metrics/metrics.service';
+import responseTime from 'response-time';
+import { Request, Response } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: { origin: '*' } });
@@ -48,6 +54,22 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('docs', app, document);
 
+  app.use(
+    responseTime((req: Request, res: Response, time: number) => {
+      if (req?.route?.path) {
+        restResponseTimeHistogram.observe(
+          {
+            method: req.method,
+            route: req.route.path,
+            status_code: res.statusCode,
+          },
+          time * 1000,
+        );
+      }
+    }),
+  );
+
   await app.listen(configService.getOrThrow('app.port', { infer: true }));
+  startMetricsServer();
 }
 void bootstrap();

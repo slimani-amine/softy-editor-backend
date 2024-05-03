@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  UseGuards,
   Query,
   HttpStatus,
   HttpCode,
@@ -15,17 +14,14 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
-import { Roles } from '../roles/roles.decorator';
-import { RoleEnum } from '../roles/roles.enum';
-import { AuthGuard } from '@nestjs/passport';
 
 import { InfinityPaginationResultType } from '../utils/types/infinity-pagination-result.type';
 import { NullableType } from '../utils/types/nullable.type';
 import { QueryUserDto } from './dto/query-user.dto';
 import { User } from './domain/user';
 import { UsersService } from './users.service';
-import { RolesGuard } from '../roles/roles.guard';
 import { infinityPagination } from '../utils/infinity-pagination';
+import { AuditLog } from 'src/audit/decorators/audit-log.decorator';
 
 @ApiBearerAuth()
 // @UseGuards(AuthGuard('jwt'))
@@ -41,6 +37,7 @@ export class UsersController {
     groups: ['admin'],
   })
   @Post()
+  @AuditLog('add-user')
   @HttpCode(HttpStatus.CREATED)
   create(@Body() createProfileDto: CreateUserDto): Promise<User> {
     return this.usersService.create(createProfileDto);
@@ -91,6 +88,7 @@ export class UsersController {
   //   groups: ['admin'],
   // })
   @Patch(':id')
+  @AuditLog('update-user')
   @HttpCode(HttpStatus.OK)
   @ApiParam({
     name: 'id',
@@ -107,6 +105,7 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @AuditLog('delete-user')
   @ApiParam({
     name: 'id',
     type: String,

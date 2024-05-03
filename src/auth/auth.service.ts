@@ -29,9 +29,7 @@ import { SessionService } from '../session/session.service';
 import { StatusEnum } from '../statuses/statuses.enum';
 import { User } from '../users/domain/user';
 import { AuthLoginDto } from './dto/auth-login.dto';
-import { LoginResponseType } from './types/login-mailing-response.type';
 import { generateUniqueCode } from 'src/utils/generateUniqueCode';
-import { isCreatedAtNow } from 'src/utils/isCreatedAtNow';
 
 @Injectable()
 export class AuthService {
@@ -239,7 +237,6 @@ export class AuthService {
 
     if (user.provider !== 'email' || user?.status?.id === 2) {
       const code = generateUniqueCode(hash);
-      console.log('🚀 ~ AuthService ~ login ~ code:', code);
 
       await this.mailService.login({
         to: loginDto.email,
@@ -293,7 +290,6 @@ export class AuthService {
       user,
       hash,
     });
-    console.log('🚀 ~ AuthService ~ register ~ session:', session);
 
     const { token, refreshToken, tokenExpires } = await this.getTokensData({
       id: user.id,
@@ -329,7 +325,6 @@ export class AuthService {
         }),
       });
 
-      console.log('🚀 ~ AuthService ~ confirmEmail ~ jwtData:', jwtData);
       userId = jwtData.confirmEmailUserId;
     } catch {
       throw new UnprocessableEntityException({

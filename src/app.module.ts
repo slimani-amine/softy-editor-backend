@@ -26,6 +26,7 @@ import { MongooseConfigService } from './database/mongoose-config.service';
 import { DatabaseConfig } from './database/config/database-config.type';
 import { DocumentsModule } from './documents/documents.module';
 import { WorkspacesModule } from './workspaces/workspaces.module';
+import { AuditModule } from './audit/audit.module';
 
 @Module({
   imports: [
@@ -84,6 +85,7 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     HomeModule,
     DocumentsModule,
     WorkspacesModule,
+    AuditModule,
   ],
 })
 export class AppModule {}
