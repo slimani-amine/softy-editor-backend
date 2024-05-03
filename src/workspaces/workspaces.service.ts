@@ -27,7 +27,6 @@ export class WorkspacesService {
     id: number,
     updateWorkspaceDto: UpdateWorkspaceDto,
   ): Promise<Workspace | null> {
-    console.log("🚀 ~ WorkspacesService ~ updateWorkspaceDto:", updateWorkspaceDto)
     return this.workspacesRepository.update(id, updateWorkspaceDto);
   }
 
