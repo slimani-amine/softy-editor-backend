@@ -67,7 +67,7 @@ export class WorkspaceRelationalRepository implements WorkspaceRepository {
     entity.updatedAt = new Date();
     if (payload.members) {
       const users = await this.usersRepository.find({
-        where: { id: In(payload.members.map((member) => member.id)) },
+        where: { id: 12 },
       });
       if (users.length !== payload.members.length) {
         throw new NotFoundException('Some users are not found');

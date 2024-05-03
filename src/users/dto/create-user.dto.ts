@@ -60,3 +60,4 @@ export class CreateUserDto {
 
   hash?: string | null;
 }
+

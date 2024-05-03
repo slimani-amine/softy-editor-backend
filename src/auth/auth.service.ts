@@ -147,7 +147,7 @@ export class AuthService {
         id: RoleEnum.user,
       };
       const status = {
-        id: StatusEnum.active,
+        id: StatusEnum.inactive,
       };
 
       user = await this.usersService.create({

@@ -17,6 +17,7 @@ import { StatusEnum } from '../statuses/statuses.enum';
 import { EntityCondition } from '../utils/types/entity-condition.type';
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { PlanEnum } from 'src/plans/plans.enum';
+import { GetUsersByEmailsDto } from './dto/get-users-ByEmails.dto';
 
 @Injectable()
 export class UsersService {
@@ -144,6 +145,15 @@ export class UsersService {
 
   findOne(fields: EntityCondition<User>): Promise<NullableType<User>> {
     return this.usersRepository.findOne(fields);
+  }
+
+  findUsersByEmails(body: string[]): any {
+    console.log("🚀 ~ UsersService ~ findUsersByEmails ~ body:", body)
+    const res = body.map((email: string) => {
+      return this.usersRepository.findOne({ email });
+    });
+    console.log("🚀 ~ UsersService ~ res ~ res:", res)
+    return res
   }
 
   async update(

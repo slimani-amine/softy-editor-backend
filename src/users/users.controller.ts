@@ -26,6 +26,7 @@ import { User } from './domain/user';
 import { UsersService } from './users.service';
 import { RolesGuard } from '../roles/roles.guard';
 import { infinityPagination } from '../utils/infinity-pagination';
+import { GetUsersByEmailsDto } from './dto/get-users-ByEmails.dto';
 
 @ApiBearerAuth()
 // @UseGuards(AuthGuard('jwt'))
@@ -87,6 +88,15 @@ export class UsersController {
     return this.usersService.findOne({ id });
   }
 
+  @Post('emails')
+  @HttpCode(HttpStatus.OK)
+  findUsersByEmails(
+    @Body() body : string[],
+  ): any {
+    console.log("🚀 ~ UsersController ~ body:", body)
+    return this.usersService.findUsersByEmails(body);
+  }
+
   // @SerializeOptions({
   //   groups: ['admin'],
   // })
@@ -101,7 +111,6 @@ export class UsersController {
     @Param('id') id: User['id'],
     @Body() updateProfileDto: UpdateUserDto,
   ): Promise<User | null> {
-
     return this.usersService.update(id, updateProfileDto);
   }
 

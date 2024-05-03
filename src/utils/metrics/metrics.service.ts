@@ -27,6 +27,7 @@ export function startMetricsServer() {
   });
 
   app.listen(process.env.METRICS_PORT, () => {
+    console.log("🚀 ~ app.listen ~ process.env.METRICS_PORT:", process.env.METRICS_PORT)
     console.info(
       `Metrics server started at http://localhost:${process.env.METRICS_PORT}`,
     );
