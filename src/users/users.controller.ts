@@ -29,7 +29,7 @@ import { infinityPagination } from '../utils/infinity-pagination';
 import { GetUsersByEmailsDto } from './dto/get-users-ByEmails.dto';
 
 @ApiBearerAuth()
-// @UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'))
 @ApiTags('Users')
 @Controller({
   path: 'users',
@@ -93,13 +93,10 @@ export class UsersController {
   findUsersByEmails(
     @Body() body : string[],
   ): any {
-    console.log("🚀 ~ UsersController ~ body:", body)
     return this.usersService.findUsersByEmails(body);
   }
 
-  // @SerializeOptions({
-  //   groups: ['admin'],
-  // })
+
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
   @ApiParam({

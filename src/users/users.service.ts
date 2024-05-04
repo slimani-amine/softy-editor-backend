@@ -148,11 +148,9 @@ export class UsersService {
   }
 
   findUsersByEmails(body: string[]): any {
-    console.log("🚀 ~ UsersService ~ findUsersByEmails ~ body:", body)
     const res = body.map((email: string) => {
       return this.usersRepository.findOne({ email });
     });
-    console.log("🚀 ~ UsersService ~ res ~ res:", res)
     return res
   }
 

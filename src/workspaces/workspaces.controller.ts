@@ -40,9 +40,7 @@ export class WorkspacesController {
   }
 
   @Patch(':id')
-  updateWorkspace(@Param('id') id: number, @Body() body: UpdateWorkspaceDto) {
-    console.log(body);
-    
+  updateWorkspace(@Param('id') id: number, @Body() body: UpdateWorkspaceDto) {    
     return this.workspacesService.update(id, body);
   }
 
