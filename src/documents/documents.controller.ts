@@ -14,13 +14,14 @@ import { DocumentsService } from './documents.service';
 import { Document } from './infrastructure/persistence/relational/entities/document.entity';
 import { UpdateDocumentDto } from './dto/update-document.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiTags } from '@nestjs/swagger';
 
 //
 // import { Serialize } from 'src/interceptors/serialize.interceptor';
 // import { DocumentDto } from './dto/document.dto';
 // @Serialize(DocumentDto)
 //
-
+@ApiTags('Document')
 @Controller('v1/documents')
 @UseGuards(AuthGuard('jwt'))
 export class DocumentsController {

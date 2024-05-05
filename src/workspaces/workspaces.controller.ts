@@ -15,7 +15,9 @@ import { WorkspacesService } from './workspaces.service';
 import { Workspace } from './infrastructure/persistence/relational/entities/workspace.entity';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { UpdateWorkspaceDto } from './dto/update-workspace.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Workspaces')
 @Controller('v1/workspaces')
 @UseGuards(AuthGuard('jwt'))
 export class WorkspacesController {
