@@ -44,7 +44,7 @@ export class WorkspacesController {
 
   @Post(':id')
   inviteMembers(
-    @Body() body: any,
+    @Body() body: InviteMembersDto,
     @Param('id') id: number,
   ): Promise<Workspace> {
     return this.workspacesService.inviteMembers(id, body);

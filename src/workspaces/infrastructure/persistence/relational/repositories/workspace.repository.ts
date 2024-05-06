@@ -124,6 +124,7 @@ export class WorkspaceRelationalRepository implements WorkspaceRepository {
             {
               workspaceId: id,
               invitedId: creator?.id,
+              invitedEmail: creator?.email,
               hash: hash,
             },
             {
