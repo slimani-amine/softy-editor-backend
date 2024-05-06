@@ -9,12 +9,11 @@ import { StripeService } from './stripe.service';
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        secret: configService.get('JWT_SECRET'), // Adjust this based on your actual secret key configuration
-        signOptions: { expiresIn: '1h' }, // Adjust expiration time as needed
+        secret: configService.get('JWT_SECRET'),
+        signOptions: { expiresIn: '1h' },
       }),
       inject: [ConfigService],
     }),
-    // Other imports...
   ],
   controllers: [StripeController],
   providers: [StripeService],

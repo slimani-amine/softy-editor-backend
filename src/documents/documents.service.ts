@@ -5,7 +5,6 @@ import { CreateDocumentDto } from './dto/create-document.dto';
 import { EntityCondition } from 'src/utils/types/entity-condition.type';
 import { NullableType } from 'src/utils/types/nullable.type';
 import { UpdateDocumentDto } from './dto/update-document.dto';
-// import { DocumentRepository } from './infrastructure/persistence/document.repository';
 
 @Injectable()
 export class DocumentsService {

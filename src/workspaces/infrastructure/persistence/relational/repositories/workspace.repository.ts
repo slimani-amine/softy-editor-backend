@@ -7,6 +7,13 @@ import { Workspace } from '../entities/workspace.entity';
 import { WorkspaceRepository } from '../../workspace.repository';
 import { JwtPayloadType } from 'src/auth/strategies/types/jwt-payload.type';
 import { UserEntity } from 'src/users/infrastructure/persistence/relational/entities/user.entity';
+import { InviteMembersDto } from 'src/workspaces/dto/inviteMembers.dto';
+import crypto from 'crypto';
+import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { AllConfigType } from 'src/config/config.type';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class WorkspaceRelationalRepository implements WorkspaceRepository {
@@ -15,6 +22,9 @@ export class WorkspaceRelationalRepository implements WorkspaceRepository {
     private readonly workspacesRepository: Repository<Workspace>,
     @InjectRepository(UserEntity)
     private readonly usersRepository: Repository<UserEntity>,
+    private jwtService: JwtService,
+    private configService: ConfigService<AllConfigType>,
+    private mailService: MailService,
   ) {}
 
   async create(data: Workspace, user: JwtPayloadType): Promise<Workspace> {
@@ -81,6 +91,62 @@ export class WorkspaceRelationalRepository implements WorkspaceRepository {
     await this.workspacesRepository.save(updatedEntity);
 
     return updatedEntity;
+  }
+
+  async inviteMembers(id: Workspace['id'], payload: InviteMembersDto) {
+    const entity = await this.workspacesRepository.findOne({
+      where: { id: Number(id) },
+      relations: ['members'],
+    });
+
+    if (!entity) {
+      throw new NotFoundException('workspace not found');
+    }
+    payload.emails &&
+      payload.emails.map(async (email: string) => {
+        const creator = await this.usersRepository.findOne({
+          where: { email: email },
+          select: {
+            id: true,
+            email: true,
+          },
+        });
+
+        const hash = crypto
+          .createHash('sha256')
+          .update(randomStringGenerator())
+          .digest('hex');
+        const tokenExpiresIn = this.configService.getOrThrow('auth.expires', {
+          infer: true,
+        });
+        const [token] = await Promise.all([
+          await this.jwtService.signAsync(
+            {
+              workspaceId: id,
+              invitedId: creator?.id,
+              hash: hash,
+            },
+            {
+              secret: this.configService.getOrThrow('auth.secret', {
+                infer: true,
+              }),
+              expiresIn: tokenExpiresIn,
+            },
+          ),
+        ]);
+
+        await this.mailService.inviteMember({
+          to: email,
+          data: {
+            token,
+            tokenExpires: Number(tokenExpiresIn),
+            from: creator?.email,
+            workspaceName: entity.title,
+          },
+        });
+      });
+
+    return 1;
   }
 
   async Delete(id: Workspace['id']): Promise<void> {

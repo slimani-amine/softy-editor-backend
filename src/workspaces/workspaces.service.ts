@@ -5,6 +5,7 @@ import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { WorkspaceRepository } from './infrastructure/persistence/workspace.repository';
 import { Workspace } from './infrastructure/persistence/relational/entities/workspace.entity';
 import { UpdateWorkspaceDto } from './dto/update-workspace.dto';
+import { InviteMembersDto } from './dto/inviteMembers.dto';
 
 @Injectable()
 export class WorkspacesService {
@@ -28,6 +29,13 @@ export class WorkspacesService {
     updateWorkspaceDto: UpdateWorkspaceDto,
   ): Promise<Workspace | null> {
     return this.workspacesRepository.update(id, updateWorkspaceDto);
+  }
+
+  inviteMembers(
+    id: number,
+    body: InviteMembersDto,
+  ): any{
+    return this.workspacesRepository.inviteMembers(id, body)
   }
 
   delete(id: number): Promise<void> {

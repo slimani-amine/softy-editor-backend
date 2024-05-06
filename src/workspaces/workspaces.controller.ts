@@ -16,6 +16,7 @@ import { Workspace } from './infrastructure/persistence/relational/entities/work
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { UpdateWorkspaceDto } from './dto/update-workspace.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { InviteMembersDto } from './dto/inviteMembers.dto';
 
 @ApiTags('Workspaces')
 @Controller('v1/workspaces')
@@ -41,8 +42,16 @@ export class WorkspacesController {
     return this.workspacesService.create(body, request);
   }
 
+  @Post(':id')
+  inviteMembers(
+    @Body() body: any,
+    @Param('id') id: number,
+  ): Promise<Workspace> {
+    return this.workspacesService.inviteMembers(id, body);
+  }
+
   @Patch(':id')
-  updateWorkspace(@Param('id') id: number, @Body() body: UpdateWorkspaceDto) {    
+  updateWorkspace(@Param('id') id: number, @Body() body: UpdateWorkspaceDto) {
     return this.workspacesService.update(id, body);
   }
 

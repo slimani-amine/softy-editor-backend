@@ -3,6 +3,7 @@ import { EntityCondition } from '../../../utils/types/entity-condition.type';
 import { NullableType } from '../../../utils/types/nullable.type';
 import { Workspace } from './relational/entities/workspace.entity';
 import { JwtPayloadType } from 'src/auth/strategies/types/jwt-payload.type';
+import { InviteMembersDto } from 'src/workspaces/dto/inviteMembers.dto';
 
 export abstract class WorkspaceRepository {
   abstract create(
@@ -22,4 +23,9 @@ export abstract class WorkspaceRepository {
   ): Promise<Workspace | null>;
 
   abstract Delete(id: Workspace['id']): Promise<void>;
+
+  abstract inviteMembers(
+    id: Workspace['id'],
+    payload: InviteMembersDto,
+  );
 }

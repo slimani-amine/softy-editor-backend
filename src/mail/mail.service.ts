@@ -161,4 +161,66 @@ export class MailService {
       },
     });
   }
+
+  async inviteMember(
+    mailData: MailData<{
+      token: string;
+      tokenExpires: number;
+      from: string | null | undefined;
+      workspaceName: string;
+    }>,
+  ): Promise<void> {
+    const i18n = I18nContext.current();
+    let invitationTitle: MaybeType<string>;
+    let text1: MaybeType<string>;
+    let text2: MaybeType<string>;
+    let text3: MaybeType<string>;
+    let text4: MaybeType<string>;
+
+    if (i18n) {
+      [invitationTitle, text1, text2, text3, text4] = await Promise.all([
+        i18n.t('common.inviteMember'),
+        i18n.t('invite-member.text1'),
+        i18n.t('invite-member.text2'),
+        i18n.t('invite-member.text3'),
+        i18n.t('invite-member.text4'),
+      ]);
+    }
+
+    const url = new URL(
+      this.configService.getOrThrow('app.frontendDomain', {
+        infer: true,
+      }) + '/login',
+    );
+    url.searchParams.set('invite', 'true');
+    url.searchParams.set('token', mailData.data.token);
+    url.searchParams.set('expires', mailData.data.tokenExpires.toString());
+
+    await this.mailerService.sendMail({
+      to: mailData.to,
+      subject: invitationTitle,
+      text: `${url.toString()} ${invitationTitle}`,
+      templatePath: path.join(
+        this.configService.getOrThrow('app.workingDirectory', {
+          infer: true,
+        }),
+        'src',
+        'mail',
+        'mail-templates',
+        'reset-password.hbs',
+      ),
+      context: {
+        title: invitationTitle,
+        url: url.toString(),
+        actionTitle: invitationTitle,
+        app_name: this.configService.get('app.name', {
+          infer: true,
+        }),
+        text1,
+        text2: text2 + mailData.data.workspaceName,
+        text3: text3 && text3 + mailData.data.from,
+        text4,
+      },
+    });
+  }
 }

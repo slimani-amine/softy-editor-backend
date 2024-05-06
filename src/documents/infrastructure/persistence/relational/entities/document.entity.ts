@@ -33,7 +33,7 @@ export class Document {
   isPublished: boolean = false;
 
   @ManyToOne(() => Workspace, (workspace) => workspace.documents)
-  workspace: Workspace;
+  workspace: {id:number};
 
   @CreateDateColumn()
   createdAt: Date;
