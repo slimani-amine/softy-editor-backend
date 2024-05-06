@@ -16,8 +16,6 @@ import {
   restResponseTimeHistogram,
   startMetricsServer,
 } from './utils/metrics/metrics.service';
-import { Request, Response } from 'express';
-import responseTime from 'response-time';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
@@ -49,21 +47,34 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('docs', app, document);
-  app.use(
-    responseTime((req: Request, res: Response, time: number) => {
-      if (req?.route?.path) {
+
+  app.use((req, res, next) => {
+    req['startTime'] = process.hrtime();
+    next();
+  });
+
+  app.use((req, res, next) => {
+    res.once('finish', () => {
+      const diff = process.hrtime(req['startTime']);
+      const time = diff[0] * 1e3 + diff[1] * 1e-6; 
+      if (req.url) {
         restResponseTimeHistogram.observe(
           {
             method: req.method,
-            route: req.route.path,
+            route: req.url,
             status_code: res.statusCode,
           },
-          time * 1000,
+          time,
         );
       }
-    }),
+    });
+    next();
+  });
+
+  await app.listen(
+    configService.getOrThrow('app.port', { infer: true }),
+    '0.0.0.0',
   );
-  await app.listen(configService.getOrThrow('app.port', { infer: true }));
   startMetricsServer();
 }
 void bootstrap();
