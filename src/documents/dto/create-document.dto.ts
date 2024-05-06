@@ -20,7 +20,7 @@ export class CreateDocumentDto {
   content: string;
 
   @IsNotEmpty()
-  workspace: Workspace;
+  workspace: { id: number };
 
   @IsOptional()
   @IsString()
