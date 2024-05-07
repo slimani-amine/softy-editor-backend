@@ -31,11 +31,8 @@ export class WorkspacesService {
     return this.workspacesRepository.update(id, updateWorkspaceDto);
   }
 
-  inviteMembers(
-    id: number,
-    body: InviteMembersDto,
-  ): any{
-    return this.workspacesRepository.inviteMembers(id, body)
+  inviteMembers(id: number, body: InviteMembersDto): Promise<Workspace> {
+    return this.workspacesRepository.inviteMembers(id, body);
   }
 
   delete(id: number): Promise<void> {

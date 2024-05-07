@@ -20,12 +20,12 @@ export abstract class WorkspaceRepository {
   abstract update(
     id: Workspace['id'],
     payload: DeepPartial<Workspace>,
-  ): Promise<Workspace | null>;
+  ): any;
 
   abstract Delete(id: Workspace['id']): Promise<void>;
 
   abstract inviteMembers(
     id: Workspace['id'],
     payload: InviteMembersDto,
-  );
+  ): Promise<Workspace>;
 }

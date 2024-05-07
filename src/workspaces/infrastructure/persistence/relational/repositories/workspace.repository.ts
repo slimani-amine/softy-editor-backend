@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, In, Repository } from 'typeorm';
 import { NullableType } from '../../../../../utils/types/nullable.type';
@@ -75,14 +79,14 @@ export class WorkspaceRelationalRepository implements WorkspaceRepository {
       throw new NotFoundException('workspace not found');
     }
     entity.updatedAt = new Date();
-    if (payload.members) {
-      const users = await this.usersRepository.find({
-        where: { id: In(payload.members.map((member) => member.id)) },
-      });
-      if (users.length !== payload.members.length) {
-        throw new NotFoundException('Some users are not found');
-      }
-    }
+    // if (payload.members) {
+    //   const users = await this.usersRepository.find({
+    //     where: { id: In(payload.members.map((member) => member.id)) },
+    //   });
+    //   if (users.length !== payload.members.length) {
+    //     throw new NotFoundException('Some users are not found');
+    //   }
+    // }
 
     const updatedEntity = await this.workspacesRepository.create({
       ...entity,
@@ -100,41 +104,56 @@ export class WorkspaceRelationalRepository implements WorkspaceRepository {
     });
 
     if (!entity) {
-      throw new NotFoundException('workspace not found');
+      throw new NotFoundException('Workspace not found');
     }
-    payload.emails &&
-      payload.emails.map(async (email: string) => {
-        const creator = await this.usersRepository.findOne({
-          where: { email: email },
-          select: {
-            id: true,
-            email: true,
-          },
-        });
 
+    if (!payload.emails || payload.emails.length === 0) {
+      throw new BadRequestException('No emails provided');
+    }
+
+    const creator = await this.usersRepository.findOne({
+      where: { email: payload.emails[payload.emails.length - 1] },
+      select: {
+        id: true,
+        email: true,
+      },
+    });
+
+    const members = [] as any;
+
+    for (const email of payload.emails) {
+      const invited = await this.usersRepository.findOne({
+        where: { email },
+        select: {
+          id: true,
+          email: true,
+        },
+      });
+
+      if (invited?.email !== creator?.email) {
         const hash = crypto
           .createHash('sha256')
           .update(randomStringGenerator())
           .digest('hex');
+
         const tokenExpiresIn = this.configService.getOrThrow('auth.expires', {
           infer: true,
         });
-        const [token] = await Promise.all([
-          await this.jwtService.signAsync(
-            {
-              workspaceId: id,
-              invitedId: creator?.id,
-              invitedEmail: creator?.email,
-              hash: hash,
-            },
-            {
-              secret: this.configService.getOrThrow('auth.secret', {
-                infer: true,
-              }),
-              expiresIn: tokenExpiresIn,
-            },
-          ),
-        ]);
+
+        const token = await this.jwtService.signAsync(
+          {
+            workspaceId: id,
+            invitedId: invited?.id,
+            invitedEmail: email,
+            hash: hash,
+          },
+          {
+            secret: this.configService.getOrThrow('auth.secret', {
+              infer: true,
+            }),
+            expiresIn: tokenExpiresIn,
+          },
+        );
 
         await this.mailService.inviteMember({
           to: email,
@@ -145,9 +164,13 @@ export class WorkspaceRelationalRepository implements WorkspaceRepository {
             workspaceName: entity.title,
           },
         });
-      });
+      }
 
-    return 1;
+      members.push({ id: invited?.id });
+    }
+
+    const updatedEntity = await this.update(id, { members });
+    return updatedEntity;
   }
 
   async Delete(id: Workspace['id']): Promise<void> {
