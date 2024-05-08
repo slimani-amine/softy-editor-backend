@@ -41,7 +41,7 @@ export class DocumentsController {
   }
 
   @Patch(':id')
-  @AuditLog('update-document')
+  // @AuditLog('update-document')
   updateDocument(@Param('id') id: number, @Body() body: UpdateDocumentDto) {
     return this.documentsService.update(id, body);
   }
