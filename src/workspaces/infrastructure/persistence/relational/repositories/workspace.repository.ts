@@ -28,11 +28,11 @@ export class WorkspaceRelationalRepository implements WorkspaceRepository {
     @InjectRepository(UserEntity)
     private readonly usersRepository: Repository<UserEntity>,
     @InjectRepository(Document) // Inject Document repository
-    private readonly documentsRepository: Repository<Document>,     private jwtService: JwtService,
+    private readonly documentsRepository: Repository<Document>,
+    private jwtService: JwtService,
     private configService: ConfigService<AllConfigType>,
     private mailService: MailService,
   ) {}
-  
 
   async create(data: Workspace, user: JwtPayloadType): Promise<Workspace> {
     data.createdAt = new Date();
@@ -112,7 +112,7 @@ export class WorkspaceRelationalRepository implements WorkspaceRepository {
       throw new BadRequestException('No emails provided');
     }
     const creator = await this.usersRepository.findOne({
-      where: { email: payload.emails[payload.emails.length - 1] },
+      where: { id: workspace.creator_id },
     });
     const invitedMembers: { id: number }[] = [];
     for (const email of payload.emails) {
@@ -164,19 +164,20 @@ export class WorkspaceRelationalRepository implements WorkspaceRepository {
   async Delete(id: Workspace['id']): Promise<number> {
     const entity = await this.workspacesRepository.findOne({
       where: { id: Number(id) },
-      relations: ['documents'], 
+      relations: ['documents'],
     });
-    
+
     if (!entity) {
       throw new NotFoundException('Workspace not found');
     }
-  
-    await Promise.all(entity.documents.map(async document => {
-      await this.documentsRepository.delete(document.id);
-    }));
-  
+
+    await Promise.all(
+      entity.documents.map(async (document) => {
+        await this.documentsRepository.delete(document.id);
+      }),
+    );
+
     await this.workspacesRepository.remove(entity);
-    return 1
+    return 1;
   }
-  
 }
