@@ -35,7 +35,7 @@ export class WorkspacesService {
     return this.workspacesRepository.inviteMembers(id, body);
   }
 
-  delete(id: number): Promise<void> {
+  delete(id: number): Promise<number> {
     return this.workspacesRepository.Delete(id);
   }
 }

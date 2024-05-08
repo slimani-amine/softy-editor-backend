@@ -18,6 +18,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AllConfigType } from 'src/config/config.type';
 import { MailService } from 'src/mail/mail.service';
+import { Document } from 'src/documents/infrastructure/persistence/relational/entities/document.entity';
 
 @Injectable()
 export class WorkspaceRelationalRepository implements WorkspaceRepository {
@@ -26,10 +27,12 @@ export class WorkspaceRelationalRepository implements WorkspaceRepository {
     private readonly workspacesRepository: Repository<Workspace>,
     @InjectRepository(UserEntity)
     private readonly usersRepository: Repository<UserEntity>,
-    private jwtService: JwtService,
+    @InjectRepository(Document) // Inject Document repository
+    private readonly documentsRepository: Repository<Document>,     private jwtService: JwtService,
     private configService: ConfigService<AllConfigType>,
     private mailService: MailService,
   ) {}
+  
 
   async create(data: Workspace, user: JwtPayloadType): Promise<Workspace> {
     data.createdAt = new Date();
@@ -55,7 +58,7 @@ export class WorkspaceRelationalRepository implements WorkspaceRepository {
       return workspace.members.some((member) => member.id === userId);
     });
 
-    return filteredEntities.length ? filteredEntities : null;
+    return filteredEntities.length ? filteredEntities : [];
   }
 
   async findOne(
@@ -158,13 +161,22 @@ export class WorkspaceRelationalRepository implements WorkspaceRepository {
     return workspace;
   }
 
-  async Delete(id: Workspace['id']): Promise<void> {
+  async Delete(id: Workspace['id']): Promise<number> {
     const entity = await this.workspacesRepository.findOne({
       where: { id: Number(id) },
+      relations: ['documents'], 
     });
+    
     if (!entity) {
-      throw new NotFoundException('workspace not found');
+      throw new NotFoundException('Workspace not found');
     }
+  
+    await Promise.all(entity.documents.map(async document => {
+      await this.documentsRepository.delete(document.id);
+    }));
+  
     await this.workspacesRepository.remove(entity);
+    return 1
   }
+  
 }

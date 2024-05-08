@@ -24,7 +24,7 @@ export class Workspace {
   @Column({ nullable: true })
   creator_id: number;
 
-  @OneToMany(() => Document, (document) => document.workspace)
+  @OneToMany(() => Document, (document) => document.workspace, { onDelete: 'CASCADE' }) 
   documents: Document[];
 
   @ManyToMany(() => UserEntity, (members) => members.workspaces_members)

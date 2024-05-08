@@ -22,7 +22,7 @@ export abstract class WorkspaceRepository {
     payload: DeepPartial<Workspace>,
   ): any;
 
-  abstract Delete(id: Workspace['id']): Promise<void>;
+  abstract Delete(id: Workspace['id']): Promise<number>;
 
   abstract inviteMembers(
     id: Workspace['id'],
