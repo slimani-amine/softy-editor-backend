@@ -46,11 +46,16 @@ export class WorkspaceRelationalRepository implements WorkspaceRepository {
   async findAll(user: JwtPayloadType): Promise<Workspace[] | null> {
     const userId = +user.id;
 
-    const entity = await this.workspacesRepository.find({
-      where: { members: { id: userId } },
-      relations: ['members'],
+    const entities = await this.workspacesRepository
+      .createQueryBuilder('workspace')
+      .innerJoinAndSelect('workspace.members', 'member')
+      .getMany();
+
+    const filteredEntities = entities.filter((workspace) => {
+      return workspace.members.some((member) => member.id === userId);
     });
-    return entity ? entity : null;
+
+    return filteredEntities.length ? filteredEntities : null;
   }
 
   async findOne(
@@ -71,66 +76,45 @@ export class WorkspaceRelationalRepository implements WorkspaceRepository {
     payload: Partial<Workspace>,
   ): Promise<Workspace> {
     const entity = await this.workspacesRepository.findOne({
-      where: { id: Number(id) },
       relations: ['members'],
+      where: { id: Number(id) },
     });
 
     if (!entity) {
       throw new NotFoundException('workspace not found');
     }
     entity.updatedAt = new Date();
-    // if (payload.members) {
-    //   const users = await this.usersRepository.find({
-    //     where: { id: In(payload.members.map((member) => member.id)) },
-    //   });
-    //   if (users.length !== payload.members.length) {
-    //     throw new NotFoundException('Some users are not found');
-    //   }
-    // }
 
     const updatedEntity = await this.workspacesRepository.create({
       ...entity,
       ...payload,
     });
-    await this.workspacesRepository.save(updatedEntity);
+    const save = await this.workspacesRepository.save(updatedEntity);
 
     return updatedEntity;
   }
 
-  async inviteMembers(id: Workspace['id'], payload: InviteMembersDto) {
-    const entity = await this.workspacesRepository.findOne({
-      where: { id: Number(id) },
+  async inviteMembers(
+    id: number,
+    payload: InviteMembersDto,
+  ): Promise<Workspace> {
+    const workspace = await this.workspacesRepository.findOne({
+      where: { id },
       relations: ['members'],
     });
-
-    if (!entity) {
+    if (!workspace) {
       throw new NotFoundException('Workspace not found');
     }
-
     if (!payload.emails || payload.emails.length === 0) {
       throw new BadRequestException('No emails provided');
     }
-
     const creator = await this.usersRepository.findOne({
       where: { email: payload.emails[payload.emails.length - 1] },
-      select: {
-        id: true,
-        email: true,
-      },
     });
-
-    const members = [] as any;
-
+    const invitedMembers: { id: number }[] = [];
     for (const email of payload.emails) {
-      const invited = await this.usersRepository.findOne({
-        where: { email },
-        select: {
-          id: true,
-          email: true,
-        },
-      });
-
-      if (invited?.email !== creator?.email) {
+      const invited = await this.usersRepository.findOne({ where: { email } });
+      if (creator?.email !== email) {
         const hash = crypto
           .createHash('sha256')
           .update(randomStringGenerator())
@@ -143,7 +127,6 @@ export class WorkspaceRelationalRepository implements WorkspaceRepository {
         const token = await this.jwtService.signAsync(
           {
             workspaceId: id,
-            invitedId: invited?.id,
             invitedEmail: email,
             hash: hash,
           },
@@ -161,16 +144,18 @@ export class WorkspaceRelationalRepository implements WorkspaceRepository {
             token,
             tokenExpires: Number(tokenExpiresIn),
             from: creator?.email,
-            workspaceName: entity.title,
+            workspaceName: workspace.title,
           },
         });
       }
-
-      members.push({ id: invited?.id });
+      if (invited) {
+        invitedMembers.push({ id: invited?.id });
+      }
     }
-
-    const updatedEntity = await this.update(id, { members });
-    return updatedEntity;
+    workspace.members = workspace.members || [];
+    workspace.members = [...workspace.members, ...invitedMembers];
+    await this.workspacesRepository.save(workspace);
+    return workspace;
   }
 
   async Delete(id: Workspace['id']): Promise<void> {

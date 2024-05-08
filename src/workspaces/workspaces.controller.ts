@@ -8,6 +8,7 @@ import {
   Patch,
   UseGuards,
   Request,
+  Put,
 } from '@nestjs/common';
 
 import { AuthGuard } from '@nestjs/passport';
@@ -17,6 +18,8 @@ import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { UpdateWorkspaceDto } from './dto/update-workspace.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { InviteMembersDto } from './dto/inviteMembers.dto';
+import { SkipJwtGuard } from 'src/utils/custom-guard';
+import { FindManyOptions } from 'typeorm';
 
 @ApiTags('Workspaces')
 @Controller('v1/workspaces')
@@ -30,8 +33,19 @@ export class WorkspacesController {
   }
 
   @Get(':id')
+  @SkipJwtGuard()
   getWorkspaceById(@Param('id') id: number) {
     return this.workspacesService.findOne({ id });
+  }
+
+  @Get(':userId')
+  @SkipJwtGuard()
+  async getUserWorkspaces(@Param('userId') userId: number) {
+    const options: FindManyOptions<Workspace> = {
+      where: { members: { id: userId } },
+      relations: ['members'], 
+    };
+    return this.workspacesService.findAll(options);
   }
 
   @Post()
@@ -42,7 +56,7 @@ export class WorkspacesController {
     return this.workspacesService.create(body, request);
   }
 
-  @Post(':id')
+  @Put(':id')
   inviteMembers(
     @Body() body: InviteMembersDto,
     @Param('id') id: number,
