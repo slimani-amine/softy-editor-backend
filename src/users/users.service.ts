@@ -17,6 +17,7 @@ import { StatusEnum } from '../statuses/statuses.enum';
 import { EntityCondition } from '../utils/types/entity-condition.type';
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { PlanEnum } from 'src/plans/plans.enum';
+import { GetUsersByEmailsDto } from './dto/get-users-ByEmails.dto';
 
 @Injectable()
 export class UsersService {
@@ -121,6 +122,8 @@ export class UsersService {
       }
     }
 
+    clonedPayload.offer = { id: 1 };
+
     return this.usersRepository.create(clonedPayload);
   }
 
@@ -144,11 +147,17 @@ export class UsersService {
     return this.usersRepository.findOne(fields);
   }
 
+  findUsersByEmails(body: string[]): any {
+    const res = body.map((email: string) => {
+      return this.usersRepository.findOne({ email });
+    });
+    return res
+  }
+
   async update(
     id: User['id'],
     payload: DeepPartial<User>,
   ): Promise<User | null> {
-    console.log('🚀 ~ UsersService ~ payload:', payload);
     const clonedPayload = { ...payload };
 
     if (
@@ -236,7 +245,6 @@ export class UsersService {
       const planObject = Object.values(PlanEnum).includes(
         clonedPayload.plan.id,
       );
-      console.log('🚀 ~ UsersService ~ planObject:', planObject);
       if (!planObject) {
         throw new UnprocessableEntityException({
           status: HttpStatus.UNPROCESSABLE_ENTITY,

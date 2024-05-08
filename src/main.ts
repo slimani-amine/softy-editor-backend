@@ -15,18 +15,19 @@ import { ResolvePromisesInterceptor } from './utils/serializer.interceptor';
 import {
   restResponseTimeHistogram,
   startMetricsServer,
+<<<<<<< HEAD
 } from './metrics/metrics.service';
 import responseTime from 'response-time';
 import { Request, Response } from 'express';
+=======
+} from './utils/metrics/metrics.service';
+>>>>>>> f9da070ebe74470d8dd4da41d64056da3213d4c9
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { cors: { origin: '*' } });
+  const app = await NestFactory.create(AppModule, { cors: true });
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
-  const configService = app.get(ConfigService<AllConfigType>);
-  app.enableCors({
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], // Add PATCH here
-  });
   app.enableShutdownHooks();
+  const configService = app.get(ConfigService<AllConfigType>);
   app.setGlobalPrefix(
     configService.getOrThrow('app.apiPrefix', { infer: true }),
     {
@@ -43,7 +44,6 @@ async function bootstrap() {
     new ResolvePromisesInterceptor(),
     new ClassSerializerInterceptor(app.get(Reflector)),
   );
-
   const options = new DocumentBuilder()
     .setTitle('API')
     .setDescription('API docs')
@@ -54,6 +54,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('docs', app, document);
 
+<<<<<<< HEAD
   app.use(
     responseTime((req: Request, res: Response, time: number) => {
       if (req?.route?.path) {
@@ -70,6 +71,35 @@ async function bootstrap() {
   );
 
   await app.listen(configService.getOrThrow('app.port', { infer: true }));
+=======
+  app.use((req, res, next) => {
+    req['startTime'] = process.hrtime();
+    next();
+  });
+
+  app.use((req, res, next) => {
+    res.once('finish', () => {
+      const diff = process.hrtime(req['startTime']);
+      const time = diff[0] * 1e3 + diff[1] * 1e-6; 
+      if (req.url) {
+        restResponseTimeHistogram.observe(
+          {
+            method: req.method,
+            route: req.url,
+            status_code: res.statusCode,
+          },
+          time,
+        );
+      }
+    });
+    next();
+  });
+
+  await app.listen(
+    configService.getOrThrow('app.port', { infer: true }),
+    '0.0.0.0',
+  );
+>>>>>>> f9da070ebe74470d8dd4da41d64056da3213d4c9
   startMetricsServer();
 }
 void bootstrap();

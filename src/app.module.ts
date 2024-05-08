@@ -26,7 +26,11 @@ import { MongooseConfigService } from './database/mongoose-config.service';
 import { DatabaseConfig } from './database/config/database-config.type';
 import { DocumentsModule } from './documents/documents.module';
 import { WorkspacesModule } from './workspaces/workspaces.module';
+<<<<<<< HEAD
 import { AuditModule } from './audit/audit.module';
+=======
+import { StripeModule } from './stripe/stripe.module';
+>>>>>>> f9da070ebe74470d8dd4da41d64056da3213d4c9
 
 @Module({
   imports: [
@@ -85,7 +89,11 @@ import { AuditModule } from './audit/audit.module';
     HomeModule,
     DocumentsModule,
     WorkspacesModule,
+<<<<<<< HEAD
     AuditModule,
+=======
+    StripeModule,
+>>>>>>> f9da070ebe74470d8dd4da41d64056da3213d4c9
   ],
 })
 export class AppModule {}

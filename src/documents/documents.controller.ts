@@ -14,8 +14,19 @@ import { DocumentsService } from './documents.service';
 import { Document } from './infrastructure/persistence/relational/entities/document.entity';
 import { UpdateDocumentDto } from './dto/update-document.dto';
 import { AuthGuard } from '@nestjs/passport';
+<<<<<<< HEAD
 import { AuditLog } from 'src/audit/decorators/audit-log.decorator';
 
+=======
+import { ApiTags } from '@nestjs/swagger';
+
+//
+// import { Serialize } from 'src/interceptors/serialize.interceptor';
+// import { DocumentDto } from './dto/document.dto';
+// @Serialize(DocumentDto)
+//
+@ApiTags('Document')
+>>>>>>> f9da070ebe74470d8dd4da41d64056da3213d4c9
 @Controller('v1/documents')
 @UseGuards(AuthGuard('jwt'))
 export class DocumentsController {

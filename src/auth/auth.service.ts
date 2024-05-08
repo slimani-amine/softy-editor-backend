@@ -145,7 +145,7 @@ export class AuthService {
         id: RoleEnum.user,
       };
       const status = {
-        id: StatusEnum.active,
+        id: StatusEnum.inactive,
       };
 
       user = await this.usersService.create({
@@ -255,7 +255,6 @@ export class AuthService {
     };
   }
 
-  //
   async register(dto: AuthRegisterLoginDto): Promise<AuthResponseType> {
     const user = await this.usersService.create({
       ...dto,
@@ -268,23 +267,19 @@ export class AuthService {
       },
     });
 
-    // const hash = await this.jwtService.signAsync(
-    //   {
-    //     confirmEmailUserId: user.id,
-    //   },
-    //   {
-    //     secret: this.configService.getOrThrow('auth.confirmEmailSecret', {
-    //       infer: true,
-    //     }),
-    //     expiresIn: this.configService.getOrThrow('auth.confirmEmailExpires', {
-    //       infer: true,
-    //     }),
-    //   },
-    // );
-    const hash = crypto
-      .createHash('sha256')
-      .update(randomStringGenerator())
-      .digest('hex');
+    const hash = await this.jwtService.signAsync(
+      {
+        confirmEmailUserId: user.id,
+      },
+      {
+        secret: this.configService.getOrThrow('auth.confirmEmailSecret', {
+          infer: true,
+        }),
+        expiresIn: this.configService.getOrThrow('auth.confirmEmailExpires', {
+          infer: true,
+        }),
+      },
+    );
 
     const session = await this.sessionService.create({
       user,
@@ -305,12 +300,7 @@ export class AuthService {
       user,
     };
 
-    // await this.mailService.userSignUp({
-    //   to: dto.email,
-    //   data: {
-    //     hash,
-    //   },
-    // });
+
   }
 
   async confirmEmail(hash: string): Promise<void> {

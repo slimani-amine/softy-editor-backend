@@ -24,27 +24,6 @@ services:
     ports:
       - 8080:8080
 
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: prometheus
-    ports:
-      - '9090:9090'
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - prometheus-data:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-    restart: unless-stopped
-
-  grafana:
-    image: grafana/grafana:latest
-    container_name: grafana
-    ports:
-      - '3001:3000'
-    volumes:
-      - grafana-data:/var/lib/grafana
-    restart: unless-stopped
-
   # Uncomment to use redis
   # redis:
   #   image: redis:7-alpine
@@ -57,8 +36,36 @@ services:
       dockerfile: Dockerfile
     ports:
       - ${APP_PORT}:${APP_PORT}
-
+    depends_on:
+      - postgres
+      - maildev
+      # Uncomment to use redis
+      # - redis
+  metrics:
+    image: prom/node-exporter
+    ports:
+      - ${METRICS_PORT}:${METRICS_PORT}
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    ports:
+      - ${PROMETHEUS_PORT}:${PROMETHEUS_PORT}
+    depends_on:
+      - api
+      - metrics
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - ${GRAFANA_PORT}:${GRAFANA_PORT}
+    volumes:
+      - grafana_data:/var/lib/grafana
 volumes:
   boilerplate-db:
   prometheus-data:
-  grafana-data:
+  grafana_data:

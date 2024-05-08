@@ -21,10 +21,14 @@ import { QueryUserDto } from './dto/query-user.dto';
 import { User } from './domain/user';
 import { UsersService } from './users.service';
 import { infinityPagination } from '../utils/infinity-pagination';
+<<<<<<< HEAD
 import { AuditLog } from 'src/audit/decorators/audit-log.decorator';
+=======
+import { GetUsersByEmailsDto } from './dto/get-users-ByEmails.dto';
+>>>>>>> f9da070ebe74470d8dd4da41d64056da3213d4c9
 
 @ApiBearerAuth()
-// @UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'))
 @ApiTags('Users')
 @Controller({
   path: 'users',
@@ -84,9 +88,15 @@ export class UsersController {
     return this.usersService.findOne({ id });
   }
 
-  // @SerializeOptions({
-  //   groups: ['admin'],
-  // })
+  @Post('emails')
+  @HttpCode(HttpStatus.OK)
+  findUsersByEmails(
+    @Body() body : string[],
+  ): any {
+    return this.usersService.findUsersByEmails(body);
+  }
+
+
   @Patch(':id')
   @AuditLog('update-user')
   @HttpCode(HttpStatus.OK)
@@ -99,8 +109,6 @@ export class UsersController {
     @Param('id') id: User['id'],
     @Body() updateProfileDto: UpdateUserDto,
   ): Promise<User | null> {
-    console.log(updateProfileDto);
-
     return this.usersService.update(id, updateProfileDto);
   }
 

@@ -66,11 +66,15 @@
     "pg": "8.11.3",
     "prom-client": "^15.1.2",
     "reflect-metadata": "0.2.1",
+<<<<<<< HEAD
     "request-ip": "^3.3.0",
+=======
+>>>>>>> f9da070ebe74470d8dd4da41d64056da3213d4c9
     "response-time": "^2.3.2",
     "rimraf": "5.0.5",
     "rxjs": "7.8.1",
     "source-map-support": "0.5.21",
+    "stripe": "^15.4.0",
     "swagger-ui-express": "5.0.0",
     "typeorm": "0.3.20"
   },

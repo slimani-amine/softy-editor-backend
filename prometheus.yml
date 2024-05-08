@@ -1,7 +1,6 @@
 global:
   scrape_interval: 15s
-
 scrape_configs:
-  - job_name: 'prometheus'
+  - job_name: 'nestjs-app'
     static_configs:
-      - targets: ['192.168.3.4:9100']
+      - targets: ['host.docker.internal:9100']
