@@ -17,6 +17,7 @@ export class DocumentRelationalRepository implements DocumentRepository {
   ) {}
 
   async create(data: Document): Promise<Document> {
+    console.log("🚀 ~ DocumentRelationalRepository ~ create ~ data:", data)
     data.createdAt = new Date();
     data.updatedAt = new Date();
     const workspaceId = data.workspace.id;

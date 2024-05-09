@@ -15,6 +15,7 @@ import { Document } from './infrastructure/persistence/relational/entities/docum
 import { UpdateDocumentDto } from './dto/update-document.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
+import { AuditLog } from 'src/audit/decorators/audit-log.decorator';
 
 //
 // import { Serialize } from 'src/interceptors/serialize.interceptor';
@@ -41,6 +42,7 @@ export class DocumentsController {
   }
 
   @Post()
+  @AuditLog('create-document')
   createDocument(@Body() body: CreateDocumentDto): Promise<Document> {
     return this.documentsService.create(body);
   }

@@ -27,6 +27,7 @@ import { DatabaseConfig } from './database/config/database-config.type';
 import { DocumentsModule } from './documents/documents.module';
 import { WorkspacesModule } from './workspaces/workspaces.module';
 import { StripeModule } from './stripe/stripe.module';
+import { AuditModule } from './audit/audit.module';
 
 @Module({
   imports: [
@@ -86,6 +87,8 @@ import { StripeModule } from './stripe/stripe.module';
     DocumentsModule,
     WorkspacesModule,
     StripeModule,
+    AuditModule,
+
   ],
 })
 export class AppModule {}

@@ -240,13 +240,17 @@ export class AuthService {
     if (user.provider !== 'email' || user?.status?.id === 2) {
       const code = generateUniqueCode(hash);
 
-      await this.mailService.login({
-        to: loginDto.email,
-        data: {
-          token,
-          code,
-        },
-      });
+      try {
+        await this.mailService.login({
+          to: loginDto.email,
+          data: {
+            token,
+            code,
+          },
+        });
+      } catch (error) {
+        return error;
+      }
     }
 
     return {
@@ -301,8 +305,6 @@ export class AuthService {
       tokenExpires,
       user,
     };
-
-
   }
 
   async confirmEmail(hash: string): Promise<void> {
