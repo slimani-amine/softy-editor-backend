@@ -1,4 +1,5 @@
 {
   "resetPassword": "Reset password",
-  "inviteMember": "Invite member"
+  "inviteMember": "Accept",
+  "confirmEmail":"Confirm email"
 }
