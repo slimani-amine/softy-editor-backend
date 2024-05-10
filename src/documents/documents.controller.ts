@@ -24,11 +24,11 @@ import { AuditLog } from 'src/audit/decorators/audit-log.decorator';
 //
 @ApiTags('Document')
 @Controller('v1/documents')
-@UseGuards(AuthGuard('jwt'))
 export class DocumentsController {
   constructor(private readonly documentsService: DocumentsService) {}
 
   @Get()
+  @UseGuards(AuthGuard('jwt'))
   getDocuments(
     @Query('workspaceId') workspaceId: string,
     @Query('isTemporarilyDeleted') isTemporarilyDeleted: boolean,
@@ -42,16 +42,19 @@ export class DocumentsController {
   }
 
   @Post()
+  @UseGuards(AuthGuard('jwt'))
   @AuditLog('create-document')
   createDocument(@Body() body: CreateDocumentDto): Promise<Document> {
     return this.documentsService.create(body);
   }
 
   @Patch(':id')
+  @UseGuards(AuthGuard('jwt'))
   updateDocument(@Param('id') id: number, @Body() body: UpdateDocumentDto) {
     return this.documentsService.update(id, body);
   }
   @Delete(':id')
+  @UseGuards(AuthGuard('jwt'))
   deleteDocument(@Param('id') id: number) {
     return this.documentsService.delete(id);
   }
