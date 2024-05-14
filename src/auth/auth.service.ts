@@ -504,6 +504,39 @@ export class AuthService {
       id: userJwtPayload.id,
     });
   }
+  async getAccessToken(sessionId: string, hash: string): Promise<string> {
+    const session = await this.sessionService.findOne({ id: sessionId });
+
+    if (!session || session.hash !== hash) {
+      throw new UnauthorizedException();
+    }
+
+    const user = await this.usersService.findOne({ id: session.user.id });
+
+    if (!user || !user.role) {
+      throw new UnauthorizedException();
+    }
+
+    const tokenExpiresIn = this.configService.getOrThrow('auth.expires', {
+      infer: true,
+    });
+
+    const token = await this.jwtService.signAsync(
+      {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        sessionId: session.id,
+        hash: session.hash,
+      },
+      {
+        secret: this.configService.getOrThrow('auth.secret', { infer: true }),
+        expiresIn: tokenExpiresIn,
+      },
+    );
+
+    return token;
+  }
 
   async refreshToken(
     data: Pick<JwtRefreshPayloadType, 'sessionId' | 'hash'>,

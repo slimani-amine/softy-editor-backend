@@ -112,6 +112,15 @@ export class AuthController {
     });
   }
 
+  @Get('access-token')
+  @UseGuards(AuthGuard('jwt-refresh'))
+  public async getAccessToken(@Request() request): Promise<string> {
+    return this.service.getAccessToken(
+      request.user.sessionId,
+      request.user.hash,
+    );
+  }
+
   @ApiBearerAuth()
   @Post('logout')
   @UseGuards(AuthGuard('jwt'))
