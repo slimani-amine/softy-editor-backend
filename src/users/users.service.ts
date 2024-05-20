@@ -17,7 +17,6 @@ import { StatusEnum } from '../statuses/statuses.enum';
 import { EntityCondition } from '../utils/types/entity-condition.type';
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { PlanEnum } from 'src/plans/plans.enum';
-import { GetUsersByEmailsDto } from './dto/get-users-ByEmails.dto';
 
 @Injectable()
 export class UsersService {
@@ -151,7 +150,7 @@ export class UsersService {
     const res = body.map((email: string) => {
       return this.usersRepository.findOne({ email });
     });
-    return res
+    return res;
   }
 
   async update(

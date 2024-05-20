@@ -28,6 +28,7 @@ import { DocumentsModule } from './documents/documents.module';
 import { WorkspacesModule } from './workspaces/workspaces.module';
 import { StripeModule } from './stripe/stripe.module';
 import { AuditModule } from './audit/audit.module';
+import { EventsRealTimeModule } from './gateway/events.module';
 
 @Module({
   imports: [
@@ -88,7 +89,7 @@ import { AuditModule } from './audit/audit.module';
     WorkspacesModule,
     StripeModule,
     AuditModule,
-
+    EventsRealTimeModule,
   ],
 })
 export class AppModule {}
